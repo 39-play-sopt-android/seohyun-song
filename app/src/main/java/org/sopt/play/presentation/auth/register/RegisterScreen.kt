@@ -1,5 +1,6 @@
 package org.sopt.play.presentation.auth.register
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ fun RegisterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(color = PlaySoptTheme.colors.white)
             .verticalScroll(rememberScrollState())
             .imePadding()
             .padding(horizontal = 16.dp),

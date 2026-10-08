@@ -1,5 +1,6 @@
 package org.sopt.play.presentation.auth.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ fun LoginScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(color = PlaySoptTheme.colors.white)
             .padding(horizontal = 16.dp),
     ) {
         Spacer(modifier = Modifier.height(60.dp))
