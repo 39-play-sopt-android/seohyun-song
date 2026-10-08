@@ -1,4 +1,4 @@
-package org.sopt.play
+package org.sopt.play.presentation.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import org.sopt.play.ui.theme.PlaySoptTheme
+import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
