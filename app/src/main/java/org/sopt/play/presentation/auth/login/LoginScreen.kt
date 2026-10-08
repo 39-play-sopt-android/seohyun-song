@@ -74,6 +74,7 @@ fun LoginScreen(
 
         PlaySoptButton(
             text = "로그인",
+            enabled = loginEnabled,
             onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth(),
         )
