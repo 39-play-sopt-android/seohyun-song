@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
@@ -29,11 +30,8 @@ fun PlaySoptBasicButton(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = backgroundColor,
-                shape = CircleShape,
-            )
+            .clip(CircleShape)
+            .background(color = backgroundColor)
             .noRippleClickable(
                 enabled = enabled,
                 onClick = onClick,
@@ -62,10 +60,12 @@ private fun PlaySoptBasicButtonPreview() {
             PlaySoptBasicButton(
                 text = "로그인",
                 onClick = {},
+                modifier = Modifier.fillMaxWidth(),
             )
             PlaySoptBasicButton(
                 text = "로그인",
                 onClick = {},
+                modifier = Modifier.fillMaxWidth(),
                 enabled = false,
             )
         }
