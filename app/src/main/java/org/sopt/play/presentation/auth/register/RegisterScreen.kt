@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.presentation.auth.AuthValidator
 
 @Composable
 fun RegisterScreen(
@@ -66,6 +67,7 @@ fun RegisterScreen(
             label = "이메일 주소",
             state = emailState,
             placeholder = "abc@email.com",
+            errorMsg = AuthValidator.emailErrorMsg(emailState.text.toString()),
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -74,6 +76,7 @@ fun RegisterScreen(
             label = "비밀번호",
             state = passwordState,
             placeholder = "6자 이상의 비밀번호",
+            errorMsg = AuthValidator.passwordErrorMsg(passwordState.text.toString()),
             isPassword = true,
         )
 
@@ -83,6 +86,11 @@ fun RegisterScreen(
             label = "비밀번호 확인",
             state = passwordConfirmState,
             placeholder = "6자 이상의 비밀번호",
+            errorMsg = AuthValidator.passwordConfirmErrorMsg(
+                password = passwordState.text.toString(),
+                passwordConfirm = passwordConfirmState.text.toString(),
+            ),
+            isPassword = true,
         )
 
         Spacer(modifier = Modifier.height(40.dp))
