@@ -10,13 +10,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.component.button.PlaySoptButton
@@ -36,6 +41,12 @@ fun LoginScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val moveFocusDown = KeyboardActionHandler { focusManager.moveFocus(FocusDirection.Down) }
+    val clearFocus = KeyboardActionHandler {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
 
     Column(
         modifier = modifier
@@ -58,6 +69,11 @@ fun LoginScreen(
             state = emailState,
             placeholder = "abc@email.com",
             errorMsg = AuthValidator.emailErrorMsg(emailState.text.toString()),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+            ),
+            onKeyboardAction = moveFocusDown,
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -68,6 +84,11 @@ fun LoginScreen(
             placeholder = "6자 이상의 비밀번호",
             errorMsg = AuthValidator.passwordErrorMsg(passwordState.text.toString()),
             isPassword = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done,
+            ),
+            onKeyboardAction = clearFocus,
         )
 
         Spacer(modifier = Modifier.height(40.dp))
