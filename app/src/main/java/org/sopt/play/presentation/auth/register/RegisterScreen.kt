@@ -137,7 +137,7 @@ fun RegisterScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun registerPreview() {
+private fun RegisterPreview() {
     PlaySoptTheme {
         RegisterScreen(
             nameState = rememberTextFieldState(),
