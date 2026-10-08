@@ -18,7 +18,7 @@ import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
 
 @Composable
-fun PlaySoptBasicButton(
+fun PlaySoptButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -49,7 +49,7 @@ fun PlaySoptBasicButton(
 
 @Preview(showBackground = true)
 @Composable
-private fun PlaySoptBasicButtonPreview() {
+private fun PlaySoptButtonPreview() {
     PlaySoptTheme {
         Column(
             modifier = Modifier
@@ -57,12 +57,12 @@ private fun PlaySoptBasicButtonPreview() {
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
-            PlaySoptBasicButton(
+            PlaySoptButton(
                 text = "로그인",
                 onClick = {},
                 modifier = Modifier.fillMaxWidth(),
             )
-            PlaySoptBasicButton(
+            PlaySoptButton(
                 text = "로그인",
                 onClick = {},
                 modifier = Modifier.fillMaxWidth(),
