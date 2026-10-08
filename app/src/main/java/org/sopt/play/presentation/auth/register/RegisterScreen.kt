@@ -41,8 +41,8 @@ fun RegisterScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = PlaySoptTheme.colors.white)
-            .verticalScroll(rememberScrollState())
             .imePadding()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
     ) {
         Spacer(modifier = Modifier.height(60.dp))
