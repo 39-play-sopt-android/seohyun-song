@@ -9,6 +9,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 private val LocalPlaySoptColors = staticCompositionLocalOf { defaultPlaySoptColors }
 
+private val LocalPlaySoptTypography = staticCompositionLocalOf { defaultPlaySoptTypography }
+
 private val PlaySoptScheme = lightColorScheme(
     background = White,
 )
@@ -18,6 +20,11 @@ object PlaySoptTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalPlaySoptColors.current
+
+    val typography: PlaySoptTypography
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalPlaySoptTypography.current
 }
 
 @Composable
@@ -26,6 +33,7 @@ fun PlaySoptTheme(
 ) {
     CompositionLocalProvider(
         LocalPlaySoptColors provides defaultPlaySoptColors,
+        LocalPlaySoptTypography provides defaultPlaySoptTypography,
     ) {
         MaterialTheme(
             colorScheme = PlaySoptScheme,
