@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
@@ -81,6 +82,8 @@ fun PlaySoptTextField(
                     text = placeholder,
                     color = colors.gray2,
                     style = PlaySoptTheme.typography.m18,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             innerTextField()
@@ -147,6 +150,11 @@ private fun PlaySoptTextFieldPreview() {
                 label = "이메일 주소",
                 state = rememberTextFieldState(),
                 placeholder = "abc@email.com",
+            )
+            PlaySoptTextField(
+                label = "이메일 주소",
+                state = rememberTextFieldState(),
+                placeholder = "플레이스 홀더가 엄청 길면 요렇게 되지여~~~~~~~!!!",
             )
             PlaySoptTextField(
                 label = "이메일 주소",
