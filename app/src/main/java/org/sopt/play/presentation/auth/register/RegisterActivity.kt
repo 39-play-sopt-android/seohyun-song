@@ -34,9 +34,10 @@ class RegisterActivity : ComponentActivity() {
 
                 val registerEnabled by remember {
                     derivedStateOf {
+                        nameState.text.isNotBlank() &&
                         AuthValidator.isValidEmail(email) &&
-                                AuthValidator.isValidPassword(password) &&
-                                AuthValidator.isValidPasswordConfirm(password, passwordConfirm)
+                        AuthValidator.isValidPassword(password) &&
+                        AuthValidator.isValidPasswordConfirm(password, passwordConfirm)
                     }
                 }
 
