@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.presentation.auth.AuthExtraKeys
 import org.sopt.play.presentation.auth.AuthValidator
 import org.sopt.play.presentation.auth.register.RegisterActivity
 import org.sopt.play.presentation.main.MainActivity
@@ -28,16 +29,16 @@ class LoginActivity : ComponentActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            registeredEmail = result.data?.getStringExtra(RegisterActivity.EXTRA_EMAIL)
-            registeredPassword = result.data?.getStringExtra(RegisterActivity.EXTRA_PASSWORD)
+            registeredEmail = result.data?.getStringExtra(AuthExtraKeys.EMAIL)
+            registeredPassword = result.data?.getStringExtra(AuthExtraKeys.PASSWORD)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let {
-            registeredEmail = it.getString(RegisterActivity.EXTRA_EMAIL)
-            registeredPassword = it.getString(RegisterActivity.EXTRA_PASSWORD)
+            registeredEmail = it.getString(KEY_REGISTERED_EMAIL)
+            registeredPassword = it.getString(KEY_REGISTERED_PASSWORD)
         }
         enableEdgeToEdge()
         setContent {
@@ -75,8 +76,8 @@ class LoginActivity : ComponentActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(RegisterActivity.EXTRA_EMAIL, registeredEmail)
-        outState.putString(RegisterActivity.EXTRA_PASSWORD, registeredPassword)
+        outState.putString(KEY_REGISTERED_EMAIL, registeredEmail)
+        outState.putString(KEY_REGISTERED_PASSWORD, registeredPassword)
     }
 
     private fun login(email: String, password: String) {
@@ -90,5 +91,10 @@ class LoginActivity : ComponentActivity() {
         } else {
             Toast.makeText(this, "이메일 또는 비밀번호가 올바르지 않아요.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    companion object {
+        private const val KEY_REGISTERED_EMAIL = "registered_email"
+        private const val KEY_REGISTERED_PASSWORD = "registered_password"
     }
 }

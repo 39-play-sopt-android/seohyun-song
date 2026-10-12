@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.presentation.auth.AuthExtraKeys
 import org.sopt.play.presentation.auth.AuthValidator
 
 class RegisterActivity : ComponentActivity() {
@@ -28,16 +29,17 @@ class RegisterActivity : ComponentActivity() {
                 val passwordState = rememberTextFieldState()
                 val passwordConfirmState = rememberTextFieldState()
 
-                val email = emailState.text.toString()
-                val password = passwordState.text.toString()
-                val passwordConfirm = passwordConfirmState.text.toString()
-
                 val registerEnabled by remember {
                     derivedStateOf {
+                        val password = passwordState.text.toString()
+
                         nameState.text.isNotBlank() &&
-                        AuthValidator.isValidEmail(email) &&
-                        AuthValidator.isValidPassword(password) &&
-                        AuthValidator.isValidPasswordConfirm(password, passwordConfirm)
+                                AuthValidator.isValidEmail(emailState.text.toString()) &&
+                                AuthValidator.isValidPassword(password) &&
+                                AuthValidator.isValidPasswordConfirm(
+                                    password,
+                                    passwordConfirmState.text.toString()
+                                )
                     }
                 }
 
@@ -48,7 +50,12 @@ class RegisterActivity : ComponentActivity() {
                         passwordState = passwordState,
                         passwordConfirmState = passwordConfirmState,
                         registerEnabled = registerEnabled,
-                        onRegisterClick = { register(email = email, password = password) },
+                        onRegisterClick = {
+                            register(
+                                email = emailState.text.toString(),
+                                password = passwordState.text.toString(),
+                            )
+                        },
                         modifier = Modifier
                             .padding(innerPadding)
                             .consumeWindowInsets(innerPadding),
@@ -60,15 +67,10 @@ class RegisterActivity : ComponentActivity() {
 
     private fun register(email: String, password: String) {
         val resultIntent = Intent().apply {
-            putExtra(EXTRA_EMAIL, email)
-            putExtra(EXTRA_PASSWORD, password)
+            putExtra(AuthExtraKeys.EMAIL, email)
+            putExtra(AuthExtraKeys.PASSWORD, password)
         }
         setResult(RESULT_OK, resultIntent)
         finish()
-    }
-
-    companion object {
-        const val EXTRA_EMAIL = "extra_email"
-        const val EXTRA_PASSWORD = "extra_password"
     }
 }
