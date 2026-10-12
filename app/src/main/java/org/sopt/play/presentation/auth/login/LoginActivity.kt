@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.auth.AuthValidator
@@ -42,8 +45,12 @@ class LoginActivity : ComponentActivity() {
                 val emailState = rememberTextFieldState()
                 val passwordState = rememberTextFieldState()
 
-                val loginEnabled = AuthValidator.isValidEmail(emailState.text.toString()) &&
-                    AuthValidator.isValidPassword(passwordState.text.toString())
+                val loginEnabled by remember {
+                    derivedStateOf {
+                        AuthValidator.isValidEmail(emailState.text.toString()) &&
+                                AuthValidator.isValidPassword(passwordState.text.toString())
+                    }
+                }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     LoginScreen(

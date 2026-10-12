@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.auth.AuthValidator
@@ -29,9 +32,13 @@ class RegisterActivity : ComponentActivity() {
                 val password = passwordState.text.toString()
                 val passwordConfirm = passwordConfirmState.text.toString()
 
-                val registerEnabled = AuthValidator.isValidEmail(email) &&
-                    AuthValidator.isValidPassword(password) &&
-                    AuthValidator.isValidPasswordConfirm(password, passwordConfirm)
+                val registerEnabled by remember {
+                    derivedStateOf {
+                        AuthValidator.isValidEmail(email) &&
+                                AuthValidator.isValidPassword(password) &&
+                                AuthValidator.isValidPasswordConfirm(password, passwordConfirm)
+                    }
+                }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     RegisterScreen(
