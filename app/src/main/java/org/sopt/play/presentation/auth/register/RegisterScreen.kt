@@ -16,6 +16,9 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -46,6 +49,25 @@ fun RegisterScreen(
     val clearFocus = KeyboardActionHandler {
         focusManager.clearFocus()
         keyboardController?.hide()
+    }
+
+    val emailErrorMsg by remember(emailState) {
+        derivedStateOf {
+            AuthValidator.emailErrorMsg(emailState.text.toString())
+        }
+    }
+    val passwordErrorMsg by remember(passwordState) {
+        derivedStateOf {
+            AuthValidator.passwordErrorMsg(passwordState.text.toString())
+        }
+    }
+    val passwordConfirmErrorMsg by remember(passwordConfirmState) {
+        derivedStateOf {
+            AuthValidator.passwordConfirmErrorMsg(
+                password = passwordState.text.toString(),
+                passwordConfirm = passwordConfirmState.text.toString()
+            )
+        }
     }
 
     Column(
@@ -83,7 +105,7 @@ fun RegisterScreen(
             label = "이메일 주소",
             state = emailState,
             placeholder = "abc@email.com",
-            errorMsg = AuthValidator.emailErrorMsg(emailState.text.toString()),
+            errorMsg = emailErrorMsg,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
@@ -97,7 +119,7 @@ fun RegisterScreen(
             label = "비밀번호",
             state = passwordState,
             placeholder = "6자 이상의 비밀번호",
-            errorMsg = AuthValidator.passwordErrorMsg(passwordState.text.toString()),
+            errorMsg = passwordErrorMsg,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -112,10 +134,7 @@ fun RegisterScreen(
             label = "비밀번호 확인",
             state = passwordConfirmState,
             placeholder = "6자 이상의 비밀번호",
-            errorMsg = AuthValidator.passwordConfirmErrorMsg(
-                password = passwordState.text.toString(),
-                passwordConfirm = passwordConfirmState.text.toString(),
-            ),
+            errorMsg = passwordConfirmErrorMsg,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
