@@ -33,6 +33,46 @@ import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.auth.AuthValidator
 
 @Composable
+fun RegisterRoute(
+    onRegisterSuccess: (email: String, password: String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val nameState = rememberTextFieldState()
+    val emailState = rememberTextFieldState()
+    val passwordState = rememberTextFieldState()
+    val passwordConfirmState = rememberTextFieldState()
+
+    val registerEnabled by remember {
+        derivedStateOf {
+            val password = passwordState.text.toString()
+
+            nameState.text.isNotBlank() &&
+                    AuthValidator.isValidEmail(emailState.text.toString()) &&
+                    AuthValidator.isValidPassword(password) &&
+                    AuthValidator.isValidPasswordConfirm(
+                        password,
+                        passwordConfirmState.text.toString()
+                    )
+        }
+    }
+
+    RegisterScreen(
+        nameState = nameState,
+        emailState = emailState,
+        passwordState = passwordState,
+        passwordConfirmState = passwordConfirmState,
+        registerEnabled = registerEnabled,
+        onRegisterClick = {
+            onRegisterSuccess(
+                emailState.text.toString(),
+                passwordState.text.toString(),
+            )
+        },
+        modifier = modifier,
+    )
+}
+
+@Composable
 fun RegisterScreen(
     nameState: TextFieldState,
     emailState: TextFieldState,
