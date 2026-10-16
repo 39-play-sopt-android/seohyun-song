@@ -27,10 +27,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
+import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
 import org.sopt.play.presentation.auth.AuthValidator
@@ -172,7 +172,7 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
+@FontScalePreviews
 @Composable
 private fun LoginPreview() {
     PlaySoptTheme {
