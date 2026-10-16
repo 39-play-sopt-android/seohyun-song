@@ -15,8 +15,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.sopt.play.R
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.presentation.home.HomeDummyData
 
 @Composable
 fun HomeBanner(
@@ -48,11 +48,7 @@ fun HomeBanner(
 private fun HomeBannerPreview() {
     PlaySoptTheme {
         HomeBanner(
-            bannerList = listOf(
-                R.drawable.banner_1,
-                R.drawable.banner_2,
-                R.drawable.banner_3,
-            ),
+            bannerList = HomeDummyData.banners,
         )
     }
 }
