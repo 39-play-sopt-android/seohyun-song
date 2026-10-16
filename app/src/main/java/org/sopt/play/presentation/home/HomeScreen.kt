@@ -38,7 +38,7 @@ fun HomeRoute(
 ) {
     var selectedMenu by remember { mutableStateOf(HomeMenu.HOME) }
     var selectedCategory by remember { mutableStateOf(HomeCategory.ALL) }
-    var favoriteProducts by remember { mutableStateOf(setOf(dummyProducts[1])) }
+    var favoriteProductIds by remember { mutableStateOf(setOf(2)) }
 
     HomeScreen(
         userName = "김솝트",
@@ -46,13 +46,13 @@ fun HomeRoute(
         productList = dummyProducts,
         selectedMenu = selectedMenu,
         selectedCategory = selectedCategory,
-        favoriteProducts = favoriteProducts,
+        favoriteProductIds = favoriteProductIds,
         onSearchClick = {},
         onMenuClick = { selectedMenu = it },
         onCategoryClick = { selectedCategory = it },
-        onFavoriteClick = { product ->
-            favoriteProducts = if (product in favoriteProducts) favoriteProducts - product
-            else favoriteProducts + product
+        onFavoriteClick = { productId ->
+            favoriteProductIds = if (productId in favoriteProductIds) favoriteProductIds - productId
+            else favoriteProductIds + productId
         },
         modifier = modifier,
     )
@@ -65,11 +65,11 @@ fun HomeScreen(
     productList: List<ProductModel>,
     selectedMenu: HomeMenu,
     selectedCategory: HomeCategory,
-    favoriteProducts: Set<ProductModel>,
+    favoriteProductIds: Set<Int>,
     onSearchClick: () -> Unit,
     onMenuClick: (HomeMenu) -> Unit,
     onCategoryClick: (HomeCategory) -> Unit,
-    onFavoriteClick: (ProductModel) -> Unit,
+    onFavoriteClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -122,11 +122,14 @@ fun HomeScreen(
                 }
             }
 
-            items(items = productList) { product ->
+            items(
+                items = productList,
+                key = { product -> product.id },
+            ) { product ->
                 HomeProductCard(
                     product = product,
-                    isFavorite = product in favoriteProducts,
-                    onFavoriteClick = { onFavoriteClick(product) },
+                    isFavorite = product.id in favoriteProductIds,
+                    onFavoriteClick = { onFavoriteClick(product.id) },
                 )
             }
         }
@@ -141,6 +144,7 @@ private val dummyBanners = listOf(
 
 private val dummyProducts = listOf(
     ProductModel(
+        id = 1,
         storeName = "트랜디어패럴",
         productName = "[카프리1위🏆/5부,7부,9부기장/MADE] 클립 스판 슬릿 바이커 카프리 데님 팬츠",
         discountRate = 36,
@@ -148,6 +152,7 @@ private val dummyProducts = listOf(
         imageRes = R.drawable.product_1,
     ),
     ProductModel(
+        id = 2,
         storeName = "슬로우앤드",
         productName = "[🍁가을/3기장선택!] made. 모먼트 투커버 올데이슬랙스 (+숏/베이직/롱ver) - 4 size",
         discountRate = 50,
@@ -155,6 +160,7 @@ private val dummyProducts = listOf(
         imageRes = R.drawable.product_2,
     ),
     ProductModel(
+        id = 3,
         storeName = "어텀",
         productName = "보울7부티셔츠",
         discountRate = 10,
@@ -162,6 +168,7 @@ private val dummyProducts = listOf(
         imageRes = R.drawable.product_3,
     ),
     ProductModel(
+        id = 4,
         storeName = "슬로우앤드",
         productName = "[오픈할인중] made. 도브 클래식 탄탄핏 무지셔츠 - 4 color",
         discountRate = 40,

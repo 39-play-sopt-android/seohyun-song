@@ -122,6 +122,7 @@ private fun HomeProductCardPreview() {
         ) {
             HomeProductCard(
                 product = ProductModel(
+                    id = 1,
                     storeName = "스토어명 최대 한 줄스토어명 최대 한 줄스토어명 최대 한 줄스토어명 최대 한 줄",
                     productName = "상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄",
                     discountRate = 49,
@@ -134,6 +135,7 @@ private fun HomeProductCardPreview() {
 
             HomeProductCard(
                 product = ProductModel(
+                    id = 2,
                     storeName = "스토어명 최대 한 줄",
                     productName = "상품명 최대 한 줄",
                     discountRate = 49,
