@@ -14,8 +14,10 @@ import org.sopt.play.presentation.auth.login.navigation.loginGraph
 import org.sopt.play.presentation.auth.login.navigation.popBackStackToLogin
 import org.sopt.play.presentation.auth.register.navigation.navigateToRegister
 import org.sopt.play.presentation.auth.register.navigation.registerGraph
+import org.sopt.play.presentation.favorite.navigation.favoriteGraph
 import org.sopt.play.presentation.home.navigation.homeGraph
 import org.sopt.play.presentation.home.navigation.navigateToHome
+import org.sopt.play.presentation.mypage.navigation.myPageGraph
 
 private const val NAVIGATION_ANIMATION_DURATION_MILLIS = 700
 
@@ -55,6 +57,14 @@ fun MainNavHost(
         )
 
         homeGraph(
+            innerPadding = innerPadding,
+        )
+
+        favoriteGraph(
+            innerPadding = innerPadding,
+        )
+
+        myPageGraph(
             innerPadding = innerPadding,
         )
     }
