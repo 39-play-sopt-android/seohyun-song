@@ -1,5 +1,6 @@
 package org.sopt.play.presentation.auth.login
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,19 +17,63 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
+import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
 import org.sopt.play.presentation.auth.AuthValidator
+
+@Composable
+fun LoginRoute(
+    registeredEmail: String?,
+    registeredPassword: String?,
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+
+    val emailState = rememberTextFieldState()
+    val passwordState = rememberTextFieldState()
+
+    val loginEnabled by remember {
+        derivedStateOf {
+            AuthValidator.isValidEmail(emailState.text.toString()) &&
+                    AuthValidator.isValidPassword(passwordState.text.toString())
+        }
+    }
+
+    LoginScreen(
+        emailState = emailState,
+        passwordState = passwordState,
+        loginEnabled = loginEnabled,
+        onLoginClick = {
+            val isRegisteredUser = registeredEmail != null &&
+                emailState.text.toString() == registeredEmail &&
+                passwordState.text.toString() == registeredPassword
+
+            if (isRegisteredUser) {
+                onLoginSuccess()
+            } else {
+                Toast.makeText(context, "이메일 또는 비밀번호가 올바르지 않아요.", Toast.LENGTH_SHORT).show()
+            }
+        },
+        onRegisterClick = onRegisterClick,
+        modifier = modifier,
+    )
+}
 
 @Composable
 fun LoginScreen(
@@ -127,7 +172,7 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
+@FontScalePreviews
 @Composable
 private fun LoginPreview() {
     PlaySoptTheme {
