@@ -11,7 +11,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 import org.sopt.play.core.navigation.Route
-import org.sopt.play.presentation.auth.AuthExtraKeys
+import org.sopt.play.presentation.auth.AuthResultKeys
 import org.sopt.play.presentation.auth.login.LoginRoute
 
 fun NavController.navigateToLogin(
@@ -23,8 +23,8 @@ fun NavController.popBackStackToLogin(
     registeredPassword: String,
 ) {
     getBackStackEntry<Login>().savedStateHandle.apply {
-        set(AuthExtraKeys.EMAIL, registeredEmail)
-        set(AuthExtraKeys.PASSWORD, registeredPassword)
+        set(AuthResultKeys.EMAIL, registeredEmail)
+        set(AuthResultKeys.PASSWORD, registeredPassword)
     }
     popBackStack<Login>(inclusive = false)
 }
@@ -36,10 +36,10 @@ fun NavGraphBuilder.loginGraph(
 ) {
     composable<Login> { backStackEntry ->
         val registeredEmail by backStackEntry.savedStateHandle
-            .getStateFlow<String?>(AuthExtraKeys.EMAIL, null)
+            .getStateFlow<String?>(AuthResultKeys.EMAIL, null)
             .collectAsStateWithLifecycle()
         val registeredPassword by backStackEntry.savedStateHandle
-            .getStateFlow<String?>(AuthExtraKeys.PASSWORD, null)
+            .getStateFlow<String?>(AuthResultKeys.PASSWORD, null)
             .collectAsStateWithLifecycle()
 
         LoginRoute(
