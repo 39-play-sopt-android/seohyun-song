@@ -1,5 +1,8 @@
 package org.sopt.play.presentation.main
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +17,8 @@ import org.sopt.play.presentation.auth.register.navigation.registerGraph
 import org.sopt.play.presentation.home.navigation.homeGraph
 import org.sopt.play.presentation.home.navigation.navigateToHome
 
+private const val NAVIGATION_ANIMATION_DURATION_MILLIS = 700
+
 @Composable
 fun MainNavHost(
     navController: NavHostController,
@@ -24,6 +29,8 @@ fun MainNavHost(
         navController = navController,
         startDestination = Login,
         modifier = modifier,
+        enterTransition = { fadeIn(animationSpec = tween(NAVIGATION_ANIMATION_DURATION_MILLIS)) },
+        exitTransition = { fadeOut(animationSpec = tween(NAVIGATION_ANIMATION_DURATION_MILLIS)) },
     ) {
         loginGraph(
             navigateToRegister = { navController.navigateToRegister() },
