@@ -19,6 +19,7 @@ import org.sopt.play.R
 
 val Pretendard = FontFamily(
     Font(R.font.pretendard_medium, FontWeight.Medium),
+    Font(R.font.pretendard_regular, FontWeight.Normal),
     Font(R.font.pretendard_semibold, FontWeight.SemiBold),
     Font(R.font.pretendard_bold, FontWeight.Bold),
 )
@@ -45,6 +46,7 @@ data class PlaySoptTypography(
     val sb16: TextStyle = playSoptTextStyle(weight = FontWeight.SemiBold, size = 16),
     val m14: TextStyle = playSoptTextStyle(weight = FontWeight.Medium, size = 14),
     val sb14: TextStyle = playSoptTextStyle(weight = FontWeight.SemiBold, size = 14),
+    val r14: TextStyle = playSoptTextStyle(weight = FontWeight.Normal, size = 14),
 )
 
 val defaultPlaySoptTypography = PlaySoptTypography()
@@ -59,6 +61,7 @@ private fun TypographyPreview() {
             Text("sb16", style = PlaySoptTheme.typography.sb16)
             Text("m14", style = PlaySoptTheme.typography.m14)
             Text("sb14", style = PlaySoptTheme.typography.sb14)
+            Text("r14", style = PlaySoptTheme.typography.r14)
         }
     }
 }
