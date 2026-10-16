@@ -4,10 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,14 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PlaySoptTheme {
-                val navController = rememberNavController()
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainNavHost(
-                        navController = navController,
-                        innerPadding = innerPadding,
-                    )
-                }
+                MainScreen()
             }
         }
     }
