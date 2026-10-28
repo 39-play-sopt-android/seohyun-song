@@ -94,13 +94,13 @@ private fun MainBottomBarItem(
                 if (isSelected) tab.selectedIconRes
                 else tab.unselectedIconRes
             ),
-            contentDescription = tab.titleRes,
+            contentDescription = tab.title,
             modifier = Modifier.size(24.dp),
             tint = Color.Unspecified,
         )
 
         Text(
-            text = tab.titleRes,
+            text = tab.title,
             style = PlaySoptTheme.typography.sb14,
             color = contentColor,
         )
