@@ -44,20 +44,4 @@ internal object HomeDummyData {
             imageRes = R.drawable.product_4,
         ),
     )
-
-    val longTextProduct = ProductModel(
-        id = 1,
-        storeName = "스토어명 최대 한 줄스토어명 최대 한 줄스토어명 최대 한 줄스토어명 최대 한 줄",
-        productName = "상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄",
-        discountRate = 49,
-        price = 29370,
-    )
-
-    val shortTextProduct = ProductModel(
-        id = 2,
-        storeName = "스토어명 최대 한 줄",
-        productName = "상품명 최대 한 줄",
-        discountRate = 49,
-        price = 29370,
-    )
 }

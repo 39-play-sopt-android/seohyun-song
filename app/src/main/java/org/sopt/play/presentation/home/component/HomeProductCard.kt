@@ -27,7 +27,6 @@ import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
 import org.sopt.play.core.extensions.toPriceFormat
 import org.sopt.play.data.model.home.ProductModel
-import org.sopt.play.presentation.home.HomeDummyData
 
 @Composable
 fun HomeProductCard(
@@ -113,6 +112,23 @@ fun HomeProductCard(
     }
 }
 
+
+private val longTextProduct = ProductModel(
+    id = 1,
+    storeName = "스토어명 최대 한 줄스토어명 최대 한 줄스토어명 최대 한 줄스토어명 최대 한 줄",
+    productName = "상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄상품명 최대 한 줄",
+    discountRate = 49,
+    price = 29370,
+)
+
+private val shortTextProduct = ProductModel(
+    id = 2,
+    storeName = "스토어명 최대 한 줄",
+    productName = "상품명 최대 한 줄",
+    discountRate = 49,
+    price = 29370,
+)
+
 @Preview(showBackground = true)
 @Composable
 private fun HomeProductCardPreview() {
@@ -122,14 +138,14 @@ private fun HomeProductCardPreview() {
             horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             HomeProductCard(
-                product = HomeDummyData.longTextProduct,
+                product = longTextProduct,
                 isFavorite = false,
                 onFavoriteClick = {},
                 modifier = Modifier.width(160.dp),
             )
 
             HomeProductCard(
-                product = HomeDummyData.shortTextProduct,
+                product = shortTextProduct,
                 isFavorite = true,
                 onFavoriteClick = {},
                 modifier = Modifier.width(160.dp),
