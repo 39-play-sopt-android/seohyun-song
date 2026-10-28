@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
-import org.sopt.play.data.model.home.ProductModel
 import org.sopt.play.presentation.home.component.HomeBanner
 import org.sopt.play.presentation.home.component.HomeCategories
 import org.sopt.play.presentation.home.component.HomeMenus
@@ -30,6 +29,7 @@ import org.sopt.play.presentation.home.component.HomeProductCard
 import org.sopt.play.presentation.home.component.HomeTopBar
 import org.sopt.play.presentation.home.model.HomeCategory
 import org.sopt.play.presentation.home.model.HomeMenu
+import org.sopt.play.presentation.home.model.ProductModel
 
 @Composable
 fun HomeRoute(

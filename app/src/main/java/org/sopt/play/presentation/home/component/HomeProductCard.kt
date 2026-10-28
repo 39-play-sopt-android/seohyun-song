@@ -26,7 +26,7 @@ import org.sopt.play.R
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
 import org.sopt.play.core.extensions.toPriceFormat
-import org.sopt.play.data.model.home.ProductModel
+import org.sopt.play.presentation.home.model.ProductModel
 
 @Composable
 fun HomeProductCard(

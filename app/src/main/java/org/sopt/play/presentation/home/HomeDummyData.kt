@@ -1,7 +1,7 @@
 package org.sopt.play.presentation.home
 
 import org.sopt.play.R
-import org.sopt.play.data.model.home.ProductModel
+import org.sopt.play.presentation.home.model.ProductModel
 
 internal object HomeDummyData {
     val banners = listOf(
