@@ -60,11 +60,11 @@ fun LoginRoute(
         passwordState = passwordState,
         loginEnabled = loginEnabled,
         onLoginClick = {
-            val isRegisteredUser = registeredEmail != null &&
+            val isCredentialMatched = registeredEmail != null &&
                 emailState.text.toString() == registeredEmail &&
                 passwordState.text.toString() == registeredPassword
 
-            if (isRegisteredUser) {
+            if (isCredentialMatched) {
                 onLoginSuccess()
             } else {
                 context.showToast("이메일 또는 비밀번호가 올바르지 않아요.")
