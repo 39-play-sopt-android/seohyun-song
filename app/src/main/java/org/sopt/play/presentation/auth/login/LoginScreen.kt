@@ -1,6 +1,5 @@
 package org.sopt.play.presentation.auth.login
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +32,7 @@ import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
+import org.sopt.play.core.extensions.showToast
 import org.sopt.play.presentation.auth.AuthValidator
 
 @Composable
@@ -67,7 +67,7 @@ fun LoginRoute(
             if (isRegisteredUser) {
                 onLoginSuccess()
             } else {
-                Toast.makeText(context, "이메일 또는 비밀번호가 올바르지 않아요.", Toast.LENGTH_SHORT).show()
+                context.showToast("이메일 또는 비밀번호가 올바르지 않아요.")
             }
         },
         onRegisterClick = onRegisterClick,
