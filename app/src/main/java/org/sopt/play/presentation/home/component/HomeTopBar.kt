@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import org.sopt.play.R
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
@@ -30,11 +33,17 @@ fun HomeTopBar(
             .padding(start = 16.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = "PLAY SOPT",
-            style = PlaySoptTheme.typography.b28,
-            color = PlaySoptTheme.colors.black,
-        )
+        val density = LocalDensity.current
+
+        CompositionLocalProvider(
+            LocalDensity provides Density(density = density.density, fontScale = 1f),
+        ) {
+            Text(
+                text = "PLAY SOPT",
+                style = PlaySoptTheme.typography.b28,
+                color = PlaySoptTheme.colors.black,
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
 
