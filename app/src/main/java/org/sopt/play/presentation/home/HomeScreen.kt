@@ -23,8 +23,8 @@ import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.home.component.HomeBanner
-import org.sopt.play.presentation.home.component.HomeCategories
-import org.sopt.play.presentation.home.component.HomeMenus
+import org.sopt.play.presentation.home.component.HomeCategoryChipRow
+import org.sopt.play.presentation.home.component.HomeMenuTabRow
 import org.sopt.play.presentation.home.component.HomeProductCard
 import org.sopt.play.presentation.home.component.HomeTopBar
 import org.sopt.play.presentation.home.model.HomeCategory
@@ -87,7 +87,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                HomeMenus(
+                HomeMenuTabRow(
                     selectedMenu = selectedMenu,
                     onMenuClick = onMenuClick,
                 )
@@ -112,7 +112,7 @@ fun HomeScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    HomeCategories(
+                    HomeCategoryChipRow(
                         selectedCategory = selectedCategory,
                         onCategoryClick = onCategoryClick,
                     )

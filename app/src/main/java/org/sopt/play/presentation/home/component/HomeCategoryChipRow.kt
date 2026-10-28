@@ -1,10 +1,11 @@
 package org.sopt.play.presentation.home.component
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,20 +18,19 @@ import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.home.model.HomeCategory
 
 @Composable
-fun HomeCategories(
+fun HomeCategoryChipRow(
     selectedCategory: HomeCategory,
     onCategoryClick: (HomeCategory) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp),
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        items(
-            items = HomeCategory.entries,
-            key = { category -> category.name },
-        ) { category ->
+        HomeCategory.entries.forEach { category ->
             HomeChip(
                 category = category.title,
                 isSelected = category == selectedCategory,
@@ -42,11 +42,11 @@ fun HomeCategories(
 
 @Preview(showBackground = true)
 @Composable
-private fun HomeCategoriesPreview() {
+private fun HomeCategoryChipRowPreview() {
     PlaySoptTheme {
         var selectedCategory by remember { mutableStateOf(HomeCategory.ALL) }
 
-        HomeCategories(
+        HomeCategoryChipRow(
             selectedCategory = selectedCategory,
             onCategoryClick = { selectedCategory = it },
         )
