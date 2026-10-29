@@ -15,11 +15,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.home.component.HomeBanner
@@ -34,25 +33,21 @@ import org.sopt.play.presentation.home.model.ProductModel
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
 ) {
-    var selectedMenu by remember { mutableStateOf(HomeMenu.HOME) }
-    var selectedCategory by remember { mutableStateOf(HomeCategory.ALL) }
-    var favoriteProductIds by remember { mutableStateOf(setOf(2)) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(
-        userName = "김솝트",
-        bannerList = HomeDummyData.banners,
-        productList = HomeDummyData.products,
-        selectedMenu = selectedMenu,
-        selectedCategory = selectedCategory,
-        favoriteProductIds = favoriteProductIds,
+        userName = uiState.userName,
+        bannerList = uiState.bannerList,
+        productList = uiState.productList,
+        selectedMenu = uiState.selectedMenu,
+        selectedCategory = uiState.selectedCategory,
+        favoriteProductIds = uiState.favoriteProductIds,
         onSearchClick = {},
-        onMenuClick = { selectedMenu = it },
-        onCategoryClick = { selectedCategory = it },
-        onFavoriteClick = { productId ->
-            favoriteProductIds = if (productId in favoriteProductIds) favoriteProductIds - productId
-            else favoriteProductIds + productId
-        },
+        onMenuClick = viewModel::selectMenu,
+        onCategoryClick = viewModel::selectCategory,
+        onFavoriteClick = viewModel::toggleFavorite,
         modifier = modifier,
     )
 }
