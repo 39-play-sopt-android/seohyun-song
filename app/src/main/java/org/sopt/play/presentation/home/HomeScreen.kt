@@ -28,7 +28,6 @@ import org.sopt.play.presentation.home.component.HomeProductCard
 import org.sopt.play.presentation.home.component.HomeTopBar
 import org.sopt.play.presentation.home.model.HomeCategory
 import org.sopt.play.presentation.home.model.HomeMenu
-import org.sopt.play.presentation.home.model.ProductModel
 
 @Composable
 fun HomeRoute(
@@ -38,12 +37,7 @@ fun HomeRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(
-        userName = uiState.userName,
-        bannerList = uiState.bannerList,
-        productList = uiState.productList,
-        selectedMenu = uiState.selectedMenu,
-        selectedCategory = uiState.selectedCategory,
-        favoriteProductIds = uiState.favoriteProductIds,
+        uiState = uiState,
         onSearchClick = {},
         onMenuClick = viewModel::selectMenu,
         onCategoryClick = viewModel::selectCategory,
@@ -54,12 +48,7 @@ fun HomeRoute(
 
 @Composable
 fun HomeScreen(
-    userName: String,
-    bannerList: List<Int>,
-    productList: List<ProductModel>,
-    selectedMenu: HomeMenu,
-    selectedCategory: HomeCategory,
-    favoriteProductIds: Set<Int>,
+    uiState: HomeUiState,
     onSearchClick: () -> Unit,
     onMenuClick: (HomeMenu) -> Unit,
     onCategoryClick: (HomeCategory) -> Unit,
@@ -83,14 +72,14 @@ fun HomeScreen(
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HomeMenuTabRow(
-                    selectedMenu = selectedMenu,
+                    selectedMenu = uiState.selectedMenu,
                     onMenuClick = onMenuClick,
                 )
             }
 
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HomeBanner(
-                    bannerList = bannerList,
+                    bannerList = uiState.bannerList,
                 )
             }
 
@@ -99,7 +88,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "${userName}님을 위한 추천 아이템",
+                        text = "${uiState.userName}님을 위한 추천 아이템",
                         color = PlaySoptTheme.colors.black,
                         style = PlaySoptTheme.typography.m18,
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -108,7 +97,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     HomeCategoryChipRow(
-                        selectedCategory = selectedCategory,
+                        selectedCategory = uiState.selectedCategory,
                         onCategoryClick = onCategoryClick,
                     )
 
@@ -117,12 +106,12 @@ fun HomeScreen(
             }
 
             items(
-                items = productList,
+                items = uiState.productList,
                 key = { product -> product.id },
             ) { product ->
                 HomeProductCard(
                     product = product,
-                    isFavorite = product.id in favoriteProductIds,
+                    isFavorite = product.id in uiState.favoriteProductIds,
                     onFavoriteClick = { onFavoriteClick(product.id) },
                 )
             }
@@ -134,6 +123,12 @@ fun HomeScreen(
 @Composable
 private fun HomePreview() {
     PlaySoptTheme {
-        HomeRoute()
+        HomeScreen(
+            uiState = HomeUiState(),
+            onSearchClick = {},
+            onMenuClick = {},
+            onCategoryClick = {},
+            onFavoriteClick = {},
+        )
     }
 }
