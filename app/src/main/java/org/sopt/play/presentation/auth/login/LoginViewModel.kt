@@ -31,13 +31,13 @@ class LoginViewModel : ViewModel() {
         val state = uiState.value
         if (!state.loginEnabled) return
 
-        val isCredentialMethod = registeredEmail != null &&
+        val isCredentialMatched = registeredEmail != null &&
                 state.email == registeredEmail &&
                 state.password == registeredPassword
 
         viewModelScope.launch {
             _event.send(
-                if (isCredentialMethod) LoginEvent.LoginSuccess
+                if (isCredentialMatched) LoginEvent.LoginSuccess
                 else LoginEvent.ShowToast("이메일 또는 비밀번호가 올바르지 않아요.")
             )
         }
