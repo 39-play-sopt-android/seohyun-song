@@ -1,34 +1,38 @@
 package org.sopt.play.presentation.auth.register
 
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RegisterViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(RegisterUiState())
-    val uiState: StateFlow<RegisterUiState> = _uiState.asStateFlow()
+    val nameState = TextFieldState()
+    val emailState = TextFieldState()
+    val passwordState = TextFieldState()
+    val passwordConfirmState = TextFieldState()
+
+    val uiState: StateFlow<RegisterUiState> = combine(
+        snapshotFlow { nameState.text.toString() },
+        snapshotFlow { emailState.text.toString() },
+        snapshotFlow { passwordState.text.toString() },
+        snapshotFlow { passwordConfirmState.text.toString() },
+    ) { name, email, password, passwordConfirm ->
+        RegisterUiState(name, email, password, passwordConfirm)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RegisterUiState())
 
     private val _event = Channel<RegisterEvent>()
     val event: Flow<RegisterEvent> = _event.receiveAsFlow()
 
-    fun updateName(name: String) = _uiState.update { it.copy(name = name) }
-
-    fun updateEmail(email: String) = _uiState.update { it.copy(email = email) }
-
-    fun updatePassword(password: String) = _uiState.update { it.copy(password = password) }
-
-    fun updatePasswordConfirm(passwordConfirm: String) = _uiState.update { it.copy(passwordConfirm = passwordConfirm) }
-
     fun register() {
-        val state = _uiState.value
-
+        val state = uiState.value
         if (!state.registerEnabled) return
 
         viewModelScope.launch {
