@@ -24,10 +24,27 @@ class LoginViewModel : ViewModel() {
         LoginUiState(email, password)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LoginUiState())
 
-    private val _event = Channel<LoginEvent>()
-    val event: Flow<LoginEvent> = _event.receiveAsFlow()
+    private val _sideEffect = Channel<LoginSideEffect>()
+    val sideEffect: Flow<LoginSideEffect> = _sideEffect.receiveAsFlow()
 
-    fun login(registeredEmail: String?, registeredPassword: String?) {
+    private var registeredEmail: String? = null
+    private var registeredPassword: String? = null
+
+    fun onIntent(intent: LoginIntent) {
+        when (intent) {
+            is LoginIntent.RegisteredUserReceived -> {
+                registeredEmail = intent.email
+                registeredPassword = intent.password
+            }
+
+            LoginIntent.LoginClick -> login()
+            LoginIntent.RegisterClick -> viewModelScope.launch {
+                _sideEffect.send(LoginSideEffect.NavigateToRegister)
+            }
+        }
+    }
+
+    private fun login() {
         val state = uiState.value
         if (!state.loginEnabled) return
 
@@ -36,9 +53,9 @@ class LoginViewModel : ViewModel() {
                 state.password == registeredPassword
 
         viewModelScope.launch {
-            _event.send(
-                if (isCredentialMatched) LoginEvent.LoginSuccess
-                else LoginEvent.ShowToast("이메일 또는 비밀번호가 올바르지 않아요.")
+            _sideEffect.send(
+                if (isCredentialMatched) LoginSideEffect.NavigateToHome
+                else LoginSideEffect.ShowToast("이메일 또는 비밀번호가 올바르지 않아요.")
             )
         }
     }

@@ -51,12 +51,17 @@ fun LoginRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(viewModel.event, lifecycleOwner) {
+    LaunchedEffect(registeredEmail, registeredPassword) {
+        viewModel.onIntent(LoginIntent.RegisteredUserReceived(registeredEmail, registeredPassword))
+    }
+
+    LaunchedEffect(viewModel.sideEffect, lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.event.collect { event ->
-                when (event) {
-                    is LoginEvent.LoginSuccess -> onLoginSuccess()
-                    is LoginEvent.ShowToast -> context.showToast(event.message)
+            viewModel.sideEffect.collect { sideEffect ->
+                when (sideEffect) {
+                    LoginSideEffect.NavigateToHome -> onLoginSuccess()
+                    LoginSideEffect.NavigateToRegister -> onRegisterClick()
+                    is LoginSideEffect.ShowToast -> context.showToast(sideEffect.message)
                 }
             }
         }
@@ -66,8 +71,7 @@ fun LoginRoute(
         emailState = viewModel.emailState,
         passwordState = viewModel.passwordState,
         uiState = uiState,
-        onLoginClick = { viewModel.login(registeredEmail, registeredPassword) },
-        onRegisterClick = onRegisterClick,
+        onIntent = viewModel::onIntent,
         modifier = modifier,
     )
 }
@@ -77,8 +81,7 @@ fun LoginScreen(
     emailState: TextFieldState,
     passwordState: TextFieldState,
     uiState: LoginUiState,
-    onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit,
+    onIntent: (LoginIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -138,7 +141,7 @@ fun LoginScreen(
         PlaySoptButton(
             text = "로그인",
             enabled = uiState.loginEnabled,
-            onClick = onLoginClick,
+            onClick = { onIntent(LoginIntent.LoginClick) },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -162,7 +165,7 @@ fun LoginScreen(
                 color = PlaySoptTheme.colors.gray6,
                 modifier = Modifier.noRippleClickable(
                     enabled = true,
-                    onClick = onRegisterClick,
+                    onClick = { onIntent(LoginIntent.RegisterClick) },
                 )
             )
         }
@@ -177,8 +180,7 @@ private fun LoginPreview() {
             emailState = rememberTextFieldState(),
             passwordState = rememberTextFieldState(),
             uiState = LoginUiState(),
-            onLoginClick = {},
-            onRegisterClick = {},
+            onIntent = {},
         )
     }
 }

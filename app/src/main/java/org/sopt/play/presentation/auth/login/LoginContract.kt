@@ -17,7 +17,14 @@ data class LoginUiState(
                 AuthValidator.isValidPassword(password)
 }
 
-sealed interface LoginEvent {
-    data object LoginSuccess : LoginEvent
-    data class ShowToast(val message: String) : LoginEvent
+sealed interface LoginIntent {
+    data class RegisteredUserReceived(val email: String?, val password: String?) : LoginIntent
+    data object LoginClick : LoginIntent
+    data object RegisterClick: LoginIntent
+}
+
+sealed interface LoginSideEffect {
+    data object NavigateToHome : LoginSideEffect
+    data object NavigateToRegister : LoginSideEffect
+    data class ShowToast(val message: String) : LoginSideEffect
 }
