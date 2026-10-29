@@ -12,15 +12,24 @@ class HomeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    fun selectMenu(menu: HomeMenu) {
+    fun onIntent(intent: HomeIntent) {
+        when (intent) {
+            HomeIntent.SearchClick -> Unit
+            is HomeIntent.MenuClick -> selectMenu(intent.menu)
+            is HomeIntent.CategoryClick -> selectCategory(intent.category)
+            is HomeIntent.FavoriteClick -> toggleFavorite(intent.productId)
+        }
+    }
+
+    private fun selectMenu(menu: HomeMenu) {
         _uiState.update { it.copy(selectedMenu = menu) }
     }
 
-    fun selectCategory(category: HomeCategory) {
+    private fun selectCategory(category: HomeCategory) {
         _uiState.update { it.copy(selectedCategory = category) }
     }
 
-    fun toggleFavorite(productId: Int) {
+    private fun toggleFavorite(productId: Int) {
         _uiState.update { state ->
             val ids = state.favoriteProductIds
             state.copy(

@@ -12,3 +12,10 @@ data class HomeUiState(
     val selectedCategory: HomeCategory = HomeCategory.ALL,
     val favoriteProductIds: Set<Int> = setOf(2),
 )
+
+sealed interface HomeIntent {
+    data object SearchClick: HomeIntent
+    data class MenuClick(val menu: HomeMenu) : HomeIntent
+    data class CategoryClick(val category: HomeCategory) : HomeIntent
+    data class FavoriteClick(val productId: Int) : HomeIntent
+}
