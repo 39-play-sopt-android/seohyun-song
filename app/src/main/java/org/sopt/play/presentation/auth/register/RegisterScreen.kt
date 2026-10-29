@@ -43,12 +43,12 @@ fun RegisterRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifeCycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(viewModel.event, lifeCycleOwner) {
+    LaunchedEffect(viewModel.sideEffect, lifeCycleOwner) {
         lifeCycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.event.collect { event ->
-                when (event) {
-                    is RegisterEvent.RegisterSuccess ->
-                        onRegisterSuccess(event.email, event.password)
+            viewModel.sideEffect.collect { sideEffect ->
+                when (sideEffect) {
+                    is RegisterSideEffect.NavigateToLogin ->
+                        onRegisterSuccess(sideEffect.email, sideEffect.password)
                 }
             }
         }
@@ -60,7 +60,7 @@ fun RegisterRoute(
         passwordState = viewModel.passwordState,
         passwordConfirmState = viewModel.passwordConfirmState,
         uiState = uiState,
-        onRegisterClick = viewModel::register,
+        onIntent = viewModel::onIntent,
         modifier = modifier,
     )
 }
@@ -72,7 +72,7 @@ fun RegisterScreen(
     passwordState: TextFieldState,
     passwordConfirmState: TextFieldState,
     uiState: RegisterUiState,
-    onRegisterClick: () -> Unit,
+    onIntent: (RegisterIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -162,7 +162,7 @@ fun RegisterScreen(
         PlaySoptButton(
             text = "회원가입",
             enabled = uiState.registerEnabled,
-            onClick = onRegisterClick,
+            onClick = { onIntent(RegisterIntent.RegisterClick) },
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -178,7 +178,7 @@ private fun RegisterPreview() {
             passwordState = rememberTextFieldState(),
             passwordConfirmState = rememberTextFieldState(),
             uiState = RegisterUiState(),
-            onRegisterClick = {},
+            onIntent = {},
         )
     }
 }

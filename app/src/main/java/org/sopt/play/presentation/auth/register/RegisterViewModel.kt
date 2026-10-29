@@ -28,15 +28,21 @@ class RegisterViewModel : ViewModel() {
         RegisterUiState(name, email, password, passwordConfirm)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RegisterUiState())
 
-    private val _event = Channel<RegisterEvent>()
-    val event: Flow<RegisterEvent> = _event.receiveAsFlow()
+    private val _sideEffect = Channel<RegisterSideEffect>()
+    val sideEffect: Flow<RegisterSideEffect> = _sideEffect.receiveAsFlow()
 
-    fun register() {
+    fun onIntent(intent: RegisterIntent) {
+        when (intent) {
+            RegisterIntent.RegisterClick -> register()
+        }
+    }
+
+    private fun register() {
         val state = uiState.value
         if (!state.registerEnabled) return
 
         viewModelScope.launch {
-            _event.send(RegisterEvent.RegisterSuccess(state.email, state.password))
+            _sideEffect.send(RegisterSideEffect.NavigateToLogin(state.email, state.password))
         }
     }
 }

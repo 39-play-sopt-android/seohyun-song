@@ -24,6 +24,10 @@ data class RegisterUiState(
                 AuthValidator.isValidPasswordConfirm(password, passwordConfirm)
 }
 
-sealed interface RegisterEvent {
-    data class RegisterSuccess(val email: String, val password: String) : RegisterEvent
+sealed interface RegisterIntent {
+    data object RegisterClick : RegisterIntent
+}
+
+sealed interface RegisterSideEffect {
+    data class NavigateToLogin(val email: String, val password: String) : RegisterSideEffect
 }
