@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import org.sopt.play.core.navigation.Route
 import org.sopt.play.presentation.auth.login.navigation.Login
 import org.sopt.play.presentation.auth.login.navigation.loginGraph
 import org.sopt.play.presentation.auth.login.navigation.popBackStackToLogin
@@ -24,12 +25,13 @@ private const val NAVIGATION_ANIMATION_DURATION_MILLIS = 700
 @Composable
 fun MainNavHost(
     navController: NavHostController,
+    startDestination: Route,
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Login,
+        startDestination = startDestination,
         modifier = modifier,
         enterTransition = { fadeIn(animationSpec = tween(NAVIGATION_ANIMATION_DURATION_MILLIS)) },
         exitTransition = { fadeOut(animationSpec = tween(NAVIGATION_ANIMATION_DURATION_MILLIS)) },
