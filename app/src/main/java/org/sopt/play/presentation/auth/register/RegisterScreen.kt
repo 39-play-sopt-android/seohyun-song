@@ -16,9 +16,8 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,48 +25,42 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
-import org.sopt.play.presentation.auth.AuthValidator
-
 @Composable
 fun RegisterRoute(
     onRegisterSuccess: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
 ) {
-    val nameState = rememberTextFieldState()
-    val emailState = rememberTextFieldState()
-    val passwordState = rememberTextFieldState()
-    val passwordConfirmState = rememberTextFieldState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val lifeCycleOwner = LocalLifecycleOwner.current
 
-    val registerEnabled by remember {
-        derivedStateOf {
-            val password = passwordState.text.toString()
-
-            nameState.text.isNotBlank() &&
-                    AuthValidator.isValidEmail(emailState.text.toString()) &&
-                    AuthValidator.isValidPassword(password) &&
-                    AuthValidator.isValidPasswordConfirm(
-                        password,
-                        passwordConfirmState.text.toString()
-                    )
+    LaunchedEffect(viewModel.sideEffect, lifeCycleOwner) {
+        lifeCycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.sideEffect.collect { sideEffect ->
+                when (sideEffect) {
+                    is RegisterSideEffect.NavigateToLogin ->
+                        onRegisterSuccess(sideEffect.email, sideEffect.password)
+                }
+            }
         }
     }
 
     RegisterScreen(
-        nameState = nameState,
-        emailState = emailState,
-        passwordState = passwordState,
-        passwordConfirmState = passwordConfirmState,
-        registerEnabled = registerEnabled,
-        onRegisterClick = {
-            onRegisterSuccess(
-                emailState.text.toString(),
-                passwordState.text.toString(),
-            )
-        },
+        nameState = viewModel.nameState,
+        emailState = viewModel.emailState,
+        passwordState = viewModel.passwordState,
+        passwordConfirmState = viewModel.passwordConfirmState,
+        uiState = uiState,
+        onIntent = viewModel::onIntent,
         modifier = modifier,
     )
 }
@@ -78,8 +71,8 @@ fun RegisterScreen(
     emailState: TextFieldState,
     passwordState: TextFieldState,
     passwordConfirmState: TextFieldState,
-    registerEnabled: Boolean,
-    onRegisterClick: () -> Unit,
+    uiState: RegisterUiState,
+    onIntent: (RegisterIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -89,25 +82,6 @@ fun RegisterScreen(
     val clearFocus = KeyboardActionHandler {
         focusManager.clearFocus()
         keyboardController?.hide()
-    }
-
-    val emailErrorMsg by remember(emailState) {
-        derivedStateOf {
-            AuthValidator.emailErrorMsg(emailState.text.toString())
-        }
-    }
-    val passwordErrorMsg by remember(passwordState) {
-        derivedStateOf {
-            AuthValidator.passwordErrorMsg(passwordState.text.toString())
-        }
-    }
-    val passwordConfirmErrorMsg by remember(passwordConfirmState) {
-        derivedStateOf {
-            AuthValidator.passwordConfirmErrorMsg(
-                password = passwordState.text.toString(),
-                passwordConfirm = passwordConfirmState.text.toString()
-            )
-        }
     }
 
     Column(
@@ -145,7 +119,7 @@ fun RegisterScreen(
             label = "이메일 주소",
             state = emailState,
             placeholder = "abc@email.com",
-            errorMsg = emailErrorMsg,
+            errorMsg = uiState.emailErrorMsg,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
@@ -159,7 +133,7 @@ fun RegisterScreen(
             label = "비밀번호",
             state = passwordState,
             placeholder = "6자 이상의 비밀번호",
-            errorMsg = passwordErrorMsg,
+            errorMsg = uiState.passwordErrorMsg,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -174,7 +148,7 @@ fun RegisterScreen(
             label = "비밀번호 확인",
             state = passwordConfirmState,
             placeholder = "6자 이상의 비밀번호",
-            errorMsg = passwordConfirmErrorMsg,
+            errorMsg = uiState.passwordConfirmErrorMsg,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -187,8 +161,8 @@ fun RegisterScreen(
 
         PlaySoptButton(
             text = "회원가입",
-            enabled = registerEnabled,
-            onClick = onRegisterClick,
+            enabled = uiState.registerEnabled,
+            onClick = { onIntent(RegisterIntent.RegisterClick) },
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -203,8 +177,8 @@ private fun RegisterPreview() {
             emailState = rememberTextFieldState(),
             passwordState = rememberTextFieldState(),
             passwordConfirmState = rememberTextFieldState(),
-            registerEnabled = false,
-            onRegisterClick = {},
+            uiState = RegisterUiState(),
+            onIntent = {},
         )
     }
 }

@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.sopt.play.presentation.main.component.MainBottomBar
 import org.sopt.play.presentation.main.component.MainTab
 
@@ -12,7 +15,10 @@ import org.sopt.play.presentation.main.component.MainTab
 fun MainScreen(
     modifier: Modifier = Modifier,
     appState: MainAppState = rememberMainAppState(),
+    viewModel: MainViewModel = viewModel(factory = MainViewModel.Factory),
 ) {
+    val startDestination by viewModel.startDestination.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -25,9 +31,12 @@ fun MainScreen(
             )
         },
     ) { innerPadding ->
-        MainNavHost(
-            navController = appState.navController,
-            innerPadding = innerPadding,
-        )
+        startDestination?.let { destination ->
+            MainNavHost(
+                navController = appState.navController,
+                startDestination = destination,
+                innerPadding = innerPadding,
+            )
+        }
     }
 }

@@ -15,11 +15,10 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.presentation.home.component.HomeBanner
@@ -27,48 +26,25 @@ import org.sopt.play.presentation.home.component.HomeCategoryChipRow
 import org.sopt.play.presentation.home.component.HomeMenuTabRow
 import org.sopt.play.presentation.home.component.HomeProductCard
 import org.sopt.play.presentation.home.component.HomeTopBar
-import org.sopt.play.presentation.home.model.HomeCategory
-import org.sopt.play.presentation.home.model.HomeMenu
-import org.sopt.play.presentation.home.model.ProductModel
 
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
 ) {
-    var selectedMenu by remember { mutableStateOf(HomeMenu.HOME) }
-    var selectedCategory by remember { mutableStateOf(HomeCategory.ALL) }
-    var favoriteProductIds by remember { mutableStateOf(setOf(2)) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(
-        userName = "김솝트",
-        bannerList = HomeDummyData.banners,
-        productList = HomeDummyData.products,
-        selectedMenu = selectedMenu,
-        selectedCategory = selectedCategory,
-        favoriteProductIds = favoriteProductIds,
-        onSearchClick = {},
-        onMenuClick = { selectedMenu = it },
-        onCategoryClick = { selectedCategory = it },
-        onFavoriteClick = { productId ->
-            favoriteProductIds = if (productId in favoriteProductIds) favoriteProductIds - productId
-            else favoriteProductIds + productId
-        },
+        uiState = uiState,
+        onIntent = viewModel::onIntent,
         modifier = modifier,
     )
 }
 
 @Composable
 fun HomeScreen(
-    userName: String,
-    bannerList: List<Int>,
-    productList: List<ProductModel>,
-    selectedMenu: HomeMenu,
-    selectedCategory: HomeCategory,
-    favoriteProductIds: Set<Int>,
-    onSearchClick: () -> Unit,
-    onMenuClick: (HomeMenu) -> Unit,
-    onCategoryClick: (HomeCategory) -> Unit,
-    onFavoriteClick: (Int) -> Unit,
+    uiState: HomeUiState,
+    onIntent: (HomeIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,7 +53,7 @@ fun HomeScreen(
             .background(color = PlaySoptTheme.colors.white),
     ) {
         HomeTopBar(
-            onSearchClick = onSearchClick,
+            onSearchClick = { onIntent(HomeIntent.SearchClick) },
         )
 
         LazyVerticalGrid(
@@ -88,14 +64,14 @@ fun HomeScreen(
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HomeMenuTabRow(
-                    selectedMenu = selectedMenu,
-                    onMenuClick = onMenuClick,
+                    selectedMenu = uiState.selectedMenu,
+                    onMenuClick = { onIntent(HomeIntent.MenuClick(it)) },
                 )
             }
 
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HomeBanner(
-                    bannerList = bannerList,
+                    bannerList = uiState.bannerList,
                 )
             }
 
@@ -104,7 +80,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "${userName}님을 위한 추천 아이템",
+                        text = "${uiState.userName}님을 위한 추천 아이템",
                         color = PlaySoptTheme.colors.black,
                         style = PlaySoptTheme.typography.m18,
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -113,8 +89,8 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     HomeCategoryChipRow(
-                        selectedCategory = selectedCategory,
-                        onCategoryClick = onCategoryClick,
+                        selectedCategory = uiState.selectedCategory,
+                        onCategoryClick = { onIntent(HomeIntent.CategoryClick(it)) },
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -122,13 +98,13 @@ fun HomeScreen(
             }
 
             items(
-                items = productList,
+                items = uiState.productList,
                 key = { product -> product.id },
             ) { product ->
                 HomeProductCard(
                     product = product,
-                    isFavorite = product.id in favoriteProductIds,
-                    onFavoriteClick = { onFavoriteClick(product.id) },
+                    isFavorite = product.id in uiState.favoriteProductIds,
+                    onFavoriteClick = { onIntent(HomeIntent.FavoriteClick(product.id)) },
                 )
             }
         }
@@ -139,6 +115,9 @@ fun HomeScreen(
 @Composable
 private fun HomePreview() {
     PlaySoptTheme {
-        HomeRoute()
+        HomeScreen(
+            uiState = HomeUiState(),
+            onIntent = {},
+        )
     }
 }
