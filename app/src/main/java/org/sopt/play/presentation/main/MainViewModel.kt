@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import org.sopt.play.core.navigation.Route
 import org.sopt.play.data.local.UserLocalDataSource
 import org.sopt.play.presentation.auth.login.navigation.Login
+import org.sopt.play.presentation.home.navigation.Home
 
 class MainViewModel(
     userLocalDataSource: UserLocalDataSource,
