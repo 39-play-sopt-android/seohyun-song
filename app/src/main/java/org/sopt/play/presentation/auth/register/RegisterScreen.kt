@@ -38,7 +38,7 @@ import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 fun RegisterRoute(
     onRegisterSuccess: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RegisterViewModel = viewModel()
+    viewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifeCycleOwner = LocalLifecycleOwner.current

@@ -45,7 +45,7 @@ fun LoginRoute(
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
