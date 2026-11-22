@@ -26,6 +26,8 @@ import org.sopt.play.presentation.home.component.HomeCategoryChipRow
 import org.sopt.play.presentation.home.component.HomeMenuTabRow
 import org.sopt.play.presentation.home.component.HomeProductCard
 import org.sopt.play.presentation.home.component.HomeTopBar
+import org.sopt.play.presentation.home.model.HomeCategory
+import org.sopt.play.presentation.home.model.HomeMenu
 
 @Composable
 fun HomeRoute(
@@ -36,7 +38,10 @@ fun HomeRoute(
 
     HomeScreen(
         uiState = uiState,
-        onIntent = viewModel::onIntent,
+        onSearchClick = { viewModel.onIntent(HomeIntent.SearchClick) },
+        onMenuClick = { viewModel.onIntent(HomeIntent.MenuClick(it)) },
+        onCategoryClick = { viewModel.onIntent(HomeIntent.CategoryClick(it)) },
+        onFavoriteClick = { viewModel.onIntent(HomeIntent.FavoriteClick(it)) },
         modifier = modifier,
     )
 }
@@ -44,7 +49,10 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
-    onIntent: (HomeIntent) -> Unit,
+    onSearchClick: () -> Unit,
+    onMenuClick: (HomeMenu) -> Unit,
+    onCategoryClick: (HomeCategory) -> Unit,
+    onFavoriteClick: (productId: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -53,7 +61,7 @@ fun HomeScreen(
             .background(color = PlaySoptTheme.colors.white),
     ) {
         HomeTopBar(
-            onSearchClick = { onIntent(HomeIntent.SearchClick) },
+            onSearchClick = onSearchClick,
         )
 
         LazyVerticalGrid(
@@ -65,7 +73,7 @@ fun HomeScreen(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HomeMenuTabRow(
                     selectedMenu = uiState.selectedMenu,
-                    onMenuClick = { onIntent(HomeIntent.MenuClick(it)) },
+                    onMenuClick = onMenuClick,
                 )
             }
 
@@ -90,7 +98,7 @@ fun HomeScreen(
 
                     HomeCategoryChipRow(
                         selectedCategory = uiState.selectedCategory,
-                        onCategoryClick = { onIntent(HomeIntent.CategoryClick(it)) },
+                        onCategoryClick = onCategoryClick,
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -104,7 +112,7 @@ fun HomeScreen(
                 HomeProductCard(
                     product = product,
                     isFavorite = product.id in uiState.favoriteProductIds,
-                    onFavoriteClick = { onIntent(HomeIntent.FavoriteClick(product.id)) },
+                    onFavoriteClick = { onFavoriteClick(product.id) },
                 )
             }
         }
@@ -117,7 +125,10 @@ private fun HomePreview() {
     PlaySoptTheme {
         HomeScreen(
             uiState = HomeUiState(),
-            onIntent = {},
+            onSearchClick = {},
+            onMenuClick = {},
+            onCategoryClick = {},
+            onFavoriteClick = {},
         )
     }
 }

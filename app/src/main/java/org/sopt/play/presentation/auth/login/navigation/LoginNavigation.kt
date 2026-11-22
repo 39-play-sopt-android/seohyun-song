@@ -27,7 +27,7 @@ fun NavGraphBuilder.loginGraph(
     composable<Login> {
         LoginRoute(
             onLoginSuccess = navigateToHome,
-            onRegisterClick = navigateToRegister,
+            navigateToRegister = navigateToRegister,
             modifier = Modifier.padding(innerPadding),
         )
     }

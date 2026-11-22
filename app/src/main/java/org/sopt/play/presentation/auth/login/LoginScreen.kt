@@ -41,7 +41,7 @@ import org.sopt.play.core.extensions.showToast
 @Composable
 fun LoginRoute(
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit,
+    navigateToRegister: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
 ) {
@@ -54,7 +54,7 @@ fun LoginRoute(
             viewModel.sideEffect.collect { sideEffect ->
                 when (sideEffect) {
                     LoginSideEffect.NavigateToHome -> onLoginSuccess()
-                    LoginSideEffect.NavigateToRegister -> onRegisterClick()
+                    LoginSideEffect.NavigateToRegister -> navigateToRegister()
                     is LoginSideEffect.ShowToast -> context.showToast(sideEffect.message)
                 }
             }
@@ -65,7 +65,8 @@ fun LoginRoute(
         emailState = viewModel.emailState,
         passwordState = viewModel.passwordState,
         uiState = uiState,
-        onIntent = viewModel::onIntent,
+        onLoginClick = { viewModel.onIntent(LoginIntent.LoginClick) },
+        onRegisterClick = { viewModel.onIntent(LoginIntent.RegisterClick) },
         modifier = modifier,
     )
 }
@@ -75,7 +76,8 @@ fun LoginScreen(
     emailState: TextFieldState,
     passwordState: TextFieldState,
     uiState: LoginUiState,
-    onIntent: (LoginIntent) -> Unit,
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -135,7 +137,7 @@ fun LoginScreen(
         PlaySoptButton(
             text = "로그인",
             enabled = uiState.loginEnabled,
-            onClick = { onIntent(LoginIntent.LoginClick) },
+            onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -159,7 +161,7 @@ fun LoginScreen(
                 color = PlaySoptTheme.colors.gray6,
                 modifier = Modifier.noRippleClickable(
                     enabled = true,
-                    onClick = { onIntent(LoginIntent.RegisterClick) },
+                    onClick = onRegisterClick,
                 )
             )
         }
@@ -174,7 +176,8 @@ private fun LoginPreview() {
             emailState = rememberTextFieldState(),
             passwordState = rememberTextFieldState(),
             uiState = LoginUiState(),
-            onIntent = {},
+            onLoginClick = {},
+            onRegisterClick = {},
         )
     }
 }

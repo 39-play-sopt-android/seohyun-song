@@ -64,7 +64,7 @@ fun RegisterRoute(
         passwordState = viewModel.passwordState,
         passwordConfirmState = viewModel.passwordConfirmState,
         uiState = uiState,
-        onIntent = viewModel::onIntent,
+        onRegisterClick = { viewModel.onIntent(RegisterIntent.RegisterClick) },
         modifier = modifier,
     )
 }
@@ -76,7 +76,7 @@ fun RegisterScreen(
     passwordState: TextFieldState,
     passwordConfirmState: TextFieldState,
     uiState: RegisterUiState,
-    onIntent: (RegisterIntent) -> Unit,
+    onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
@@ -166,7 +166,7 @@ fun RegisterScreen(
         PlaySoptButton(
             text = "회원가입",
             enabled = uiState.registerEnabled,
-            onClick = { onIntent(RegisterIntent.RegisterClick) },
+            onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth(),
         )
     }
@@ -182,7 +182,7 @@ private fun RegisterPreview() {
             passwordState = rememberTextFieldState(),
             passwordConfirmState = rememberTextFieldState(),
             uiState = RegisterUiState(),
-            onIntent = {},
+            onRegisterClick = {},
         )
     }
 }
