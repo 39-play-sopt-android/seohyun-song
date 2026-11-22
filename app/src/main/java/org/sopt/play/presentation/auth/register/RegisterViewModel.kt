@@ -49,7 +49,12 @@ class RegisterViewModel(
 
         viewModelScope.launch {
             userLocalDataSource.saveUser(state.email, state.password)
-            _sideEffect.send(RegisterSideEffect.NavigateToLogin(state.email, state.password))
+                .onSuccess {
+                    _sideEffect.send(RegisterSideEffect.NavigateToLogin(state.email, state.password))
+                }
+                .onFailure {
+                    _sideEffect.send(RegisterSideEffect.ShowToast("회원가입에 실패했어요."))
+                }
         }
     }
 

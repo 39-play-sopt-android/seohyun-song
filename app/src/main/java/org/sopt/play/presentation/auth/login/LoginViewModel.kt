@@ -65,7 +65,12 @@ class LoginViewModel(
 
             if (isCredentialMatched) {
                 userLocalDataSource.setAutoLogin(true)
-                _sideEffect.send(LoginSideEffect.NavigateToHome)
+                    .onSuccess {
+                        _sideEffect.send(LoginSideEffect.NavigateToHome)
+                    }
+                    .onFailure {
+                        _sideEffect.send(LoginSideEffect.ShowToast("로그인 처리 중 문제가 생겼어요."))
+                    }
             } else {
                 _sideEffect.send(LoginSideEffect.ShowToast("이메일 또는 비밀번호가 올바르지 않아요."))
             }

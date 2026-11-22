@@ -34,14 +34,14 @@ class UserLocalDataSource(context: Context) {
         .map { it[Keys.IS_AUTO_LOGIN] ?: false }
         .distinctUntilChanged()
 
-    suspend fun saveUser(email: String, password: String) {
+    suspend fun saveUser(email: String, password: String): Result<Unit> = runCatching {
         dataStore.edit { prefs ->
             prefs[Keys.EMAIL] = email
             prefs[Keys.PASSWORD] = password
         }
     }
 
-    suspend fun setAutoLogin(enabled: Boolean) {
+    suspend fun setAutoLogin(enabled: Boolean): Result<Unit> = runCatching {
         dataStore.edit { it[Keys.IS_AUTO_LOGIN] = enabled }
     }
 

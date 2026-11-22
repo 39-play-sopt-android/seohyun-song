@@ -30,4 +30,5 @@ sealed interface RegisterIntent {
 
 sealed interface RegisterSideEffect {
     data class NavigateToLogin(val email: String, val password: String) : RegisterSideEffect
+    data class ShowToast(val message: String) : RegisterSideEffect
 }
