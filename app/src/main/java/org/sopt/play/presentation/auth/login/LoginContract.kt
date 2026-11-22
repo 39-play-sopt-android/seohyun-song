@@ -19,7 +19,7 @@ data class LoginUiState(
 
 sealed interface LoginIntent {
     data object LoginClick : LoginIntent
-    data object RegisterClick: LoginIntent
+    data object RegisterClick : LoginIntent
 }
 
 sealed interface LoginSideEffect {
