@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 private val Context.userDataSource: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
@@ -23,9 +24,15 @@ class UserLocalDataSource(context: Context) {
             else throw e
         }
 
-    val registeredEmail: Flow<String?> = preferences.map { it[Keys.EMAIL] }
-    val registeredPassword: Flow<String?> = preferences.map { it[Keys.PASSWORD] }
-    val isAutoLogin: Flow<Boolean> = preferences.map { it[Keys.IS_AUTO_LOGIN] ?: false }
+    val registeredEmail: Flow<String?> = preferences
+        .map { it[Keys.EMAIL] }
+        .distinctUntilChanged()
+    val registeredPassword: Flow<String?> = preferences
+        .map { it[Keys.PASSWORD] }
+        .distinctUntilChanged()
+    val isAutoLogin: Flow<Boolean> = preferences
+        .map { it[Keys.IS_AUTO_LOGIN] ?: false }
+        .distinctUntilChanged()
 
     suspend fun saveUser(email: String, password: String) {
         dataStore.edit { prefs ->
