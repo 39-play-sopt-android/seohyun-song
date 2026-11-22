@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -34,12 +35,15 @@ import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.extensions.showToast
+
 @Composable
 fun RegisterRoute(
     onRegisterSuccess: (email: String, password: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifeCycleOwner = LocalLifecycleOwner.current
 
@@ -49,6 +53,7 @@ fun RegisterRoute(
                 when (sideEffect) {
                     is RegisterSideEffect.NavigateToLogin ->
                         onRegisterSuccess(sideEffect.email, sideEffect.password)
+                    is RegisterSideEffect.ShowToast -> context.showToast(sideEffect.message)
                 }
             }
         }
