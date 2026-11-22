@@ -18,7 +18,6 @@ data class LoginUiState(
 }
 
 sealed interface LoginIntent {
-    data class RegisteredUserReceived(val email: String?, val password: String?) : LoginIntent
     data object LoginClick : LoginIntent
     data object RegisterClick: LoginIntent
 }

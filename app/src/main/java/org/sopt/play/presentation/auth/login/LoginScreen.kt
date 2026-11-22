@@ -40,8 +40,6 @@ import org.sopt.play.core.extensions.showToast
 
 @Composable
 fun LoginRoute(
-    registeredEmail: String?,
-    registeredPassword: String?,
     onLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -50,10 +48,6 @@ fun LoginRoute(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
-
-    LaunchedEffect(registeredEmail, registeredPassword) {
-        viewModel.onIntent(LoginIntent.RegisteredUserReceived(registeredEmail, registeredPassword))
-    }
 
     LaunchedEffect(viewModel.sideEffect, lifecycleOwner) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

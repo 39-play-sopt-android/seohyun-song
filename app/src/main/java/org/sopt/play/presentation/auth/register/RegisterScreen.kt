@@ -39,7 +39,7 @@ import org.sopt.play.core.extensions.showToast
 
 @Composable
 fun RegisterRoute(
-    onRegisterSuccess: (email: String, password: String) -> Unit,
+    onRegisterSuccess: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RegisterViewModel = viewModel(factory = RegisterViewModel.Factory)
 ) {
@@ -51,8 +51,7 @@ fun RegisterRoute(
         lifeCycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.sideEffect.collect { sideEffect ->
                 when (sideEffect) {
-                    is RegisterSideEffect.NavigateToLogin ->
-                        onRegisterSuccess(sideEffect.email, sideEffect.password)
+                    RegisterSideEffect.NavigateToLogin -> onRegisterSuccess()
                     is RegisterSideEffect.ShowToast -> context.showToast(sideEffect.message)
                 }
             }

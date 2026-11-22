@@ -17,7 +17,7 @@ fun NavController.navigateToRegister(
 ) = navigate(Register, navOptions)
 
 fun NavGraphBuilder.registerGraph(
-    onRegisterSuccess: (email: String, password: String) -> Unit,
+    onRegisterSuccess: () -> Unit,
     innerPadding: PaddingValues,
 ) {
     composable<Register> {

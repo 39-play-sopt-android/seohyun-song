@@ -34,16 +34,8 @@ class LoginViewModel(
     private val _sideEffect = Channel<LoginSideEffect>()
     val sideEffect: Flow<LoginSideEffect> = _sideEffect.receiveAsFlow()
 
-    private var registeredEmail: String? = null
-    private var registeredPassword: String? = null
-
     fun onIntent(intent: LoginIntent) {
         when (intent) {
-            is LoginIntent.RegisteredUserReceived -> {
-                registeredEmail = intent.email
-                registeredPassword = intent.password
-            }
-
             LoginIntent.LoginClick -> login()
             LoginIntent.RegisterClick -> viewModelScope.launch {
                 _sideEffect.send(LoginSideEffect.NavigateToRegister)

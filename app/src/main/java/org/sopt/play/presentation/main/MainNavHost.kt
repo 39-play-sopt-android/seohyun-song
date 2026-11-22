@@ -49,12 +49,7 @@ fun MainNavHost(
         )
 
         registerGraph(
-            onRegisterSuccess = { email, password ->
-                navController.popBackStackToLogin(
-                    registeredEmail = email,
-                    registeredPassword = password,
-                )
-            },
+            onRegisterSuccess = { navController.popBackStackToLogin() },
             innerPadding = innerPadding,
         )
 
