@@ -35,6 +35,7 @@ import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.designsystem.type.PlaySoptButtonType
 import org.sopt.play.core.extensions.showToast
 
 @Composable
@@ -165,9 +166,9 @@ fun RegisterScreen(
 
         PlaySoptButton(
             text = "회원가입",
-            enabled = uiState.registerEnabled,
             onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth(),
+            type = if (uiState.registerEnabled) PlaySoptButtonType.PRIMARY else PlaySoptButtonType.DISABLED,
         )
     }
 }
