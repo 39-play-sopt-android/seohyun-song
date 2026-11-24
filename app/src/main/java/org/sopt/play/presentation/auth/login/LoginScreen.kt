@@ -16,9 +16,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
@@ -27,50 +26,47 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
 import org.sopt.play.core.extensions.noRippleClickable
 import org.sopt.play.core.extensions.showToast
-import org.sopt.play.presentation.auth.AuthValidator
 
 @Composable
 fun LoginRoute(
-    registeredEmail: String?,
-    registeredPassword: String?,
     onLoginSuccess: () -> Unit,
-    onRegisterClick: () -> Unit,
+    navigateToRegister: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
 ) {
     val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    val emailState = rememberTextFieldState()
-    val passwordState = rememberTextFieldState()
-
-    val loginEnabled by remember {
-        derivedStateOf {
-            AuthValidator.isValidEmail(emailState.text.toString()) &&
-                    AuthValidator.isValidPassword(passwordState.text.toString())
+    LaunchedEffect(viewModel.sideEffect, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.sideEffect.collect { sideEffect ->
+                when (sideEffect) {
+                    LoginSideEffect.NavigateToHome -> onLoginSuccess()
+                    LoginSideEffect.NavigateToRegister -> navigateToRegister()
+                    is LoginSideEffect.ShowToast -> context.showToast(sideEffect.message)
+                }
+            }
         }
     }
 
     LoginScreen(
-        emailState = emailState,
-        passwordState = passwordState,
-        loginEnabled = loginEnabled,
-        onLoginClick = {
-            val isCredentialMatched = registeredEmail != null &&
-                emailState.text.toString() == registeredEmail &&
-                passwordState.text.toString() == registeredPassword
-
-            if (isCredentialMatched) {
-                onLoginSuccess()
-            } else {
-                context.showToast("이메일 또는 비밀번호가 올바르지 않아요.")
-            }
-        },
-        onRegisterClick = onRegisterClick,
+        emailState = viewModel.emailState,
+        passwordState = viewModel.passwordState,
+        uiState = uiState,
+        onLoginClick = { viewModel.onIntent(LoginIntent.LoginClick) },
+        onRegisterClick = { viewModel.onIntent(LoginIntent.RegisterClick) },
         modifier = modifier,
     )
 }
@@ -79,7 +75,7 @@ fun LoginRoute(
 fun LoginScreen(
     emailState: TextFieldState,
     passwordState: TextFieldState,
-    loginEnabled: Boolean,
+    uiState: LoginUiState,
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -113,7 +109,7 @@ fun LoginScreen(
             label = "이메일 주소",
             state = emailState,
             placeholder = "abc@email.com",
-            errorMsg = AuthValidator.emailErrorMsg(emailState.text.toString()),
+            errorMsg = uiState.emailErrorMsg,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
@@ -127,7 +123,7 @@ fun LoginScreen(
             label = "비밀번호",
             state = passwordState,
             placeholder = "6자 이상의 비밀번호",
-            errorMsg = AuthValidator.passwordErrorMsg(passwordState.text.toString()),
+            errorMsg = uiState.passwordErrorMsg,
             isPassword = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -140,7 +136,7 @@ fun LoginScreen(
 
         PlaySoptButton(
             text = "로그인",
-            enabled = loginEnabled,
+            enabled = uiState.loginEnabled,
             onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -179,7 +175,7 @@ private fun LoginPreview() {
         LoginScreen(
             emailState = rememberTextFieldState(),
             passwordState = rememberTextFieldState(),
-            loginEnabled = true,
+            uiState = LoginUiState(),
             onLoginClick = {},
             onRegisterClick = {},
         )
