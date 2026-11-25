@@ -1,16 +1,7 @@
 package org.sopt.play.presentation.posts
 
 import org.sopt.play.presentation.posts.model.PostCardUiModel
-
-sealed interface PostSheetMode {
-    data object Create : PostSheetMode
-
-    data class Edit(
-        val postId: Long,
-        val initialTitle: String,
-        val initialContent: String,
-    ) : PostSheetMode
-}
+import org.sopt.play.presentation.posts.model.PostSheetMode
 
 data class PostsUiState(
     val posts: List<PostCardUiModel> = emptyList(),

@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.sopt.play.presentation.posts.model.PostCardUiModel
+import org.sopt.play.presentation.posts.model.PostSheetMode.Create
+import org.sopt.play.presentation.posts.model.PostSheetMode.Edit
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -89,7 +91,7 @@ class PostsViewModel : ViewModel() {
         contentState.clearText()
 
         _uiState.update {
-            it.copy(sheetMode = PostSheetMode.Create)
+            it.copy(sheetMode = Create)
         }
     }
 
@@ -100,7 +102,7 @@ class PostsViewModel : ViewModel() {
         contentState.setTextAndPlaceCursorAtEnd(post.content)
 
         _uiState.update {
-            it.copy(sheetMode = PostSheetMode.Edit(post.id, post.title, post.content))
+            it.copy(sheetMode = Edit(post.id, post.title, post.content))
         }
     }
 
@@ -125,7 +127,7 @@ class PostsViewModel : ViewModel() {
         val content = state.content.trim()
 
         when (mode) {
-            PostSheetMode.Create -> dummyPosts += PostCardUiModel(
+            Create -> dummyPosts += PostCardUiModel(
                 id = nextId++,
                 title = title,
                 content = content,
@@ -133,7 +135,7 @@ class PostsViewModel : ViewModel() {
                 createdAt = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA).format(Date()),
             )
 
-            is PostSheetMode.Edit -> {
+            is Edit -> {
                 val index = dummyPosts.indexOfFirst { it.id == mode.postId }
 
                 if (index == -1) {
