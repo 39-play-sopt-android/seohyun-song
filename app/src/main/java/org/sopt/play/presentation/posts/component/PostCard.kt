@@ -18,11 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.extensions.noRippleCombinedClickable
 import org.sopt.play.presentation.posts.model.PostCardUiModel
 
 @Composable
 fun PostCard(
     post: PostCardUiModel,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -31,6 +34,10 @@ fun PostCard(
             .background(
                 color = PlaySoptTheme.colors.gray1,
                 shape = RoundedCornerShape(20.dp),
+            )
+            .noRippleCombinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
             )
             .padding(all = 20.dp),
     ) {
@@ -88,6 +95,8 @@ private fun PostCardPreview() {
                 author = "훔나훔나",
                 createdAt = "2026.11.25",
             ),
+            onClick = {},
+            onLongClick = {},
             modifier = Modifier.padding(16.dp),
         )
     }
