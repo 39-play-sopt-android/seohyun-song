@@ -11,32 +11,76 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.sopt.play.core.designsystem.component.button.PlaySoptFloatingButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptSearchTextField
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.extensions.showToast
+import org.sopt.play.presentation.posts.component.PostBottomSheet
 import org.sopt.play.presentation.posts.component.PostCard
+import org.sopt.play.presentation.posts.component.PostModal
 import org.sopt.play.presentation.posts.model.PostCardUiModel
 
 @Composable
 fun PostsRoute(
     modifier: Modifier = Modifier,
+    viewModel: PostsViewModel = viewModel(),
 ) {
-    val searchState = rememberTextFieldState()
+    val context = LocalContext.current
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(viewModel.sideEffect, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.sideEffect.collect { sideEffect ->
+                when (sideEffect) {
+                    is PostsSideEffect.ShowToast -> context.showToast(sideEffect.message)
+                }
+            }
+        }
+    }
 
     PostsScreen(
-        uiState = PostsUiState(),
-        searchState = searchState,
-        onSearch = {},
-        onPostClick = {},
-        onPostLongClick = {},
-        onAddClick = {},
+        uiState = uiState,
+        searchState = viewModel.searchState,
+        onSearch = { viewModel.onIntent(PostsIntent.SearchClick) },
+        onPostClick = { viewModel.onIntent(PostsIntent.PostClick(it)) },
+        onPostLongClick = { viewModel.onIntent(PostsIntent.PostLongClick(it)) },
+        onAddClick = { viewModel.onIntent(PostsIntent.AddClick) },
         modifier = modifier,
     )
+
+    if (uiState.sheetMode != null) {
+        PostBottomSheet(
+            titleState = viewModel.titleState,
+            contentState = viewModel.contentState,
+            isCompleteEnabled = uiState.completeEnabled,
+            onCompleteClick = { viewModel.onIntent(PostsIntent.CompleteClick) },
+            onDismissRequest = { viewModel.onIntent(PostsIntent.SheetDismiss) },
+        )
+    }
+
+    if (uiState.deleteTargetId != null) {
+        PostModal(
+            onDeleteClick = { viewModel.onIntent(PostsIntent.DeleteClick) },
+            onDismissRequest = { viewModel.onIntent(PostsIntent.ModalDismiss) },
+        )
+    }
 }
 
 @Composable
@@ -62,20 +106,34 @@ fun PostsScreen(
                 modifier = Modifier.padding(vertical = 12.dp),
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 152.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(
-                    items = uiState.posts,
-                    key = { it.id },
-                ) { post ->
-                    PostCard(
-                        post = post,
-                        onClick = { onPostClick(post.id) },
-                        onLongClick = { onPostLongClick(post.id) },
+            if (uiState.showEmpty) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = uiState.emptyMessage,
+                        color = PlaySoptTheme.colors.gray6,
+                        style = PlaySoptTheme.typography.m18,
+                        textAlign = TextAlign.Center,
                     )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 152.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(
+                        items = uiState.posts,
+                        key = { it.id },
+                    ) { post ->
+                        PostCard(
+                            post = post,
+                            onClick = { onPostClick(post.id) },
+                            onLongClick = { onPostLongClick(post.id) },
+                        )
+                    }
                 }
             }
         }
