@@ -16,10 +16,12 @@ fun NavController.navigateToHome(
 ) = navigate(Home, navOptions)
 
 fun NavGraphBuilder.homeGraph(
+    navigateToPosts: () -> Unit,
     innerPadding: PaddingValues,
 ) {
     composable<Home> {
         HomeRoute(
+            navigateToPosts = navigateToPosts,
             modifier = Modifier.padding(innerPadding)
         )
     }

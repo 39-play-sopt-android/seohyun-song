@@ -19,6 +19,8 @@ import org.sopt.play.presentation.favorite.navigation.favoriteGraph
 import org.sopt.play.presentation.home.navigation.homeGraph
 import org.sopt.play.presentation.home.navigation.navigateToHome
 import org.sopt.play.presentation.mypage.navigation.myPageGraph
+import org.sopt.play.presentation.posts.navigation.navigateToPosts
+import org.sopt.play.presentation.posts.navigation.postsGraph
 
 private const val NAVIGATION_ANIMATION_DURATION_MILLIS = 700
 
@@ -54,6 +56,7 @@ fun MainNavHost(
         )
 
         homeGraph(
+            navigateToPosts = { navController.navigateToPosts() },
             innerPadding = innerPadding,
         )
 
@@ -62,6 +65,10 @@ fun MainNavHost(
         )
 
         myPageGraph(
+            innerPadding = innerPadding,
+        )
+
+        postsGraph(
             innerPadding = innerPadding,
         )
     }
