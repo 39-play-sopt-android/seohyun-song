@@ -26,12 +26,11 @@ private const val CONTENT_MAX_LENGTH = 1000
 fun PostBottomSheet(
     titleState: TextFieldState,
     contentState: TextFieldState,
+    isCompleteEnabled: Boolean,
     onCompleteClick: () -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isCompleteEnabled = titleState.text.isNotBlank() && contentState.text.isNotBlank()
-
     PlaySoptBottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
@@ -70,6 +69,7 @@ private fun PostBottomSheetEmptyPreview() {
         PostBottomSheet(
             titleState = rememberTextFieldState(),
             contentState = rememberTextFieldState(),
+            isCompleteEnabled = false,
             onCompleteClick = {},
             onDismissRequest = {},
         )
@@ -83,6 +83,7 @@ private fun PostBottomSheetFilledPreview() {
         PostBottomSheet(
             titleState = rememberTextFieldState("제목은 최대 20자 글자 수 제한"),
             contentState = rememberTextFieldState("본문은 최대 1000자 글자 수 제한"),
+            isCompleteEnabled = true,
             onCompleteClick = {},
             onDismissRequest = {},
         )
