@@ -6,6 +6,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.sopt.play.BuildConfig
+import org.sopt.play.data.remote.service.MemberService
+import org.sopt.play.data.remote.service.PostService
 import retrofit2.Retrofit
 
 object ApiFactory {
@@ -26,7 +28,9 @@ object ApiFactory {
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BuildConfig.BASE_URL)
         .client(client)
-
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
+
+    val postService: PostService by lazy { retrofit.create(PostService::class.java) }
+    val memberService: MemberService by lazy { retrofit.create(MemberService::class.java) }
 }
