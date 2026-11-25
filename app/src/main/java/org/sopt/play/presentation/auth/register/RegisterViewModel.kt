@@ -53,8 +53,14 @@ class RegisterViewModel(
                     _sideEffect.send(RegisterSideEffect.NavigateToLogin)
                 }
                 .onFailure {
-                    _sideEffect.send(RegisterSideEffect.ShowToast("회원가입에 실패했어요."))
+                    showToast("회원가입에 실패했어요.")
                 }
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _sideEffect.send(RegisterSideEffect.ShowToast(message))
         }
     }
 
