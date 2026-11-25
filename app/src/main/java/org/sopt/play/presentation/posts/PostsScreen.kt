@@ -56,41 +56,36 @@ fun PostsRoute(
     }
 
     PostsScreen(
-        uiState = uiState,
         searchState = viewModel.searchState,
+        titleState = viewModel.titleState,
+        contentState = viewModel.contentState,
+        uiState = uiState,
         onSearch = { viewModel.onIntent(PostsIntent.SearchClick) },
         onPostClick = { viewModel.onIntent(PostsIntent.PostClick(it)) },
         onPostLongClick = { viewModel.onIntent(PostsIntent.PostLongClick(it)) },
         onAddClick = { viewModel.onIntent(PostsIntent.AddClick) },
+        onCompleteClick = { viewModel.onIntent(PostsIntent.CompleteClick) },
+        onSheetDismiss = { viewModel.onIntent(PostsIntent.SheetDismiss) },
+        onDeleteClick = { viewModel.onIntent(PostsIntent.DeleteClick) },
+        onModalDismiss = { viewModel.onIntent(PostsIntent.ModalDismiss) },
         modifier = modifier,
     )
-
-    if (uiState.sheetMode != null) {
-        PostBottomSheet(
-            titleState = viewModel.titleState,
-            contentState = viewModel.contentState,
-            isCompleteEnabled = uiState.completeEnabled,
-            onCompleteClick = { viewModel.onIntent(PostsIntent.CompleteClick) },
-            onDismissRequest = { viewModel.onIntent(PostsIntent.SheetDismiss) },
-        )
-    }
-
-    if (uiState.deleteTargetId != null) {
-        PostModal(
-            onDeleteClick = { viewModel.onIntent(PostsIntent.DeleteClick) },
-            onDismissRequest = { viewModel.onIntent(PostsIntent.ModalDismiss) },
-        )
-    }
 }
 
 @Composable
 fun PostsScreen(
-    uiState: PostsUiState,
     searchState: TextFieldState,
+    titleState: TextFieldState,
+    contentState: TextFieldState,
+    uiState: PostsUiState,
     onSearch: () -> Unit,
     onPostClick: (postId: Long) -> Unit,
     onPostLongClick: (postId: Long) -> Unit,
     onAddClick: () -> Unit,
+    onCompleteClick: () -> Unit,
+    onSheetDismiss: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onModalDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -145,6 +140,23 @@ fun PostsScreen(
                 .padding(bottom = 20.dp),
         )
     }
+
+    if (uiState.sheetMode != null) {
+        PostBottomSheet(
+            titleState = titleState,
+            contentState = contentState,
+            isCompleteEnabled = uiState.completeEnabled,
+            onCompleteClick = onCompleteClick,
+            onDismissRequest = onSheetDismiss,
+        )
+    }
+
+    if (uiState.deleteTargetId != null) {
+        PostModal(
+            onDeleteClick = onDeleteClick,
+            onDismissRequest = onModalDismiss,
+        )
+    }
 }
 
 @Preview
@@ -152,6 +164,9 @@ fun PostsScreen(
 private fun PostsScreenPreview() {
     PlaySoptTheme {
         PostsScreen(
+            searchState = rememberTextFieldState(),
+            titleState = rememberTextFieldState(),
+            contentState = rememberTextFieldState(),
             uiState = PostsUiState(
                 posts = List(8) { index ->
                     PostCardUiModel(
@@ -163,11 +178,14 @@ private fun PostsScreenPreview() {
                     )
                 },
             ),
-            searchState = rememberTextFieldState(),
             onSearch = {},
             onPostClick = {},
             onPostLongClick = {},
             onAddClick = {},
+            onCompleteClick = {},
+            onSheetDismiss = {},
+            onDeleteClick = {},
+            onModalDismiss = {},
         )
     }
 }
