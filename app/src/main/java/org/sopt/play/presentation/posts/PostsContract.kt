@@ -30,7 +30,8 @@ data class PostsUiState(
                 null -> false
                 PostSheetMode.Create -> isFilled
                 is PostSheetMode.Edit -> isFilled &&
-                        (title.trim() != mode.initialTitle || content.trim() != mode.initialContent)
+                        (title.trim() != mode.initialTitle.trim() ||
+                                content.trim() != mode.initialContent.trim())
             }
         }
 
