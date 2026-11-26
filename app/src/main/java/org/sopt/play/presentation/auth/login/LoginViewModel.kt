@@ -17,9 +17,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.sopt.play.data.local.UserLocalDataSource
+import org.sopt.play.data.remote.ApiFactory
+import org.sopt.play.data.remote.dto.request.AuthorizationCodeRequestDto
+import org.sopt.play.data.remote.service.MemberService
 
 class LoginViewModel(
-    private val userLocalDataSource: UserLocalDataSource
+    private val userLocalDataSource: UserLocalDataSource,
+    private val memberService: MemberService,
 ) : ViewModel() {
     val emailState = TextFieldState()
     val passwordState = TextFieldState()
@@ -55,18 +59,33 @@ class LoginViewModel(
                     state.email == registeredEmail &&
                     state.password == registeredPassword
 
-            if (isCredentialMatched) {
-                userLocalDataSource.setAutoLogin(true)
-                    .onSuccess {
-                        _sideEffect.send(LoginSideEffect.NavigateToHome)
-                    }
-                    .onFailure {
-                        showToast("로그인 처리 중 문제가 생겼어요.")
-                    }
-            } else {
+            if (!isCredentialMatched) {
                 showToast("이메일 또는 비밀번호가 올바르지 않아요.")
+                return@launch
             }
+
+            ensureAuthorizationCode()
+                .onFailure {
+                    showToast("인증 코드 발급에 실패했어요.")
+                    return@launch
+                }
+
+            userLocalDataSource.setAutoLogin(true)
+                .onSuccess { _sideEffect.send(LoginSideEffect.NavigateToHome) }
+                .onFailure { showToast("로그인 처리 중 문제가 생겼어요.") }
         }
+    }
+
+    private suspend fun ensureAuthorizationCode(): Result<Unit> = runCatching {
+        if (userLocalDataSource.authorizationCode.first() != null) return@runCatching
+
+        val code = memberService
+            .issueAuthorizationCode(AuthorizationCodeRequestDto(part = PART))
+            .data
+            ?.authorizationCode
+            ?: error("authorizationCode가 비어 있어요.")
+
+        userLocalDataSource.saveAuthorizationCode(code).getOrThrow()
     }
 
     private fun showToast(message: String) {
@@ -76,9 +95,14 @@ class LoginViewModel(
     }
 
     companion object {
+        private const val PART = "ANDROID"
+
         val Factory = viewModelFactory {
             initializer {
-                LoginViewModel(UserLocalDataSource(this[APPLICATION_KEY]!!))
+                LoginViewModel(
+                    userLocalDataSource = UserLocalDataSource(this[APPLICATION_KEY]!!),
+                    memberService = ApiFactory.memberService,
+                )
             }
         }
     }
