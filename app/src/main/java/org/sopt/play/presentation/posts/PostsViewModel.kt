@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.sopt.play.core.di.appContainer
+import org.sopt.play.data.remote.serverMessage
 import org.sopt.play.data.repository.PostRepository
 import org.sopt.play.presentation.posts.model.PostSheetMode.Create
 import org.sopt.play.presentation.posts.model.PostSheetMode.Edit
@@ -86,9 +87,9 @@ class PostsViewModel(
                         it.copy(posts = posts.map { dto -> dto.toUiModel() }, isLoading = false)
                     }
                 }
-                .onFailure {
+                .onFailure { error ->
                     _uiState.update { it.copy(isLoading = false) }
-                    showToast("게시글을 불러오지 못했어요.")
+                    showToast(error.serverMessage() ?: "게시글을 불러오지 못했어요.")
                 }
         }
     }
@@ -143,10 +144,9 @@ class PostsViewModel(
                     closeSheet()
                     refreshPosts()
                 }
-                .onFailure {
-                    showToast(
-                        if (mode is Edit) "게시글 수정에 실패했어요." else "게시글 작성에 실패했어요."
-                    )
+                .onFailure { error ->
+                    val fallback = if (mode is Edit) "게시글 수정에 실패했어요." else "게시글 작성에 실패했어요."
+                    showToast(error.serverMessage() ?: fallback)
                 }
         }
     }
@@ -158,7 +158,7 @@ class PostsViewModel(
         viewModelScope.launch {
             postRepository.deletePost(postId)
                 .onSuccess { refreshPosts() }
-                .onFailure { showToast("게시글 삭제에 실패했어요.") }
+                .onFailure { showToast(it.serverMessage() ?: "게시글 삭제에 실패했어요.") }
         }
     }
 

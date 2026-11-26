@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.sopt.play.core.di.appContainer
+import org.sopt.play.data.remote.serverMessage
 import org.sopt.play.data.repository.AuthRepository
 
 class LoginViewModel(
@@ -54,7 +55,7 @@ class LoginViewModel(
 
             authRepository.ensureAuthorizationCode()
                 .onFailure {
-                    showToast("인증 코드 발급에 실패했어요.")
+                    showToast(it.serverMessage() ?: "인증 코드 발급에 실패했어요.")
                     return@launch
                 }
 
