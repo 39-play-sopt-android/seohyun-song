@@ -114,6 +114,10 @@ fun PostsScreen(
         if (shouldLoadMore) onLoadMore()
     }
 
+    LaunchedEffect(uiState.keyword) {
+        listState.scrollToItem(0)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
