@@ -75,10 +75,14 @@ class PostsViewModel(
     }
 
     private fun search() {
-        _uiState.update {
-            it.copy(keyword = searchState.text.toString().trim())
+        val keyword = searchState.text.toString().trim()
+
+        if (keyword.isNotEmpty() && keyword.length < SEARCH_KEYWORD_MIN_LENGTH) {
+            showToast("검색어는 ${SEARCH_KEYWORD_MIN_LENGTH}자 이상 입력해 주세요.")
+            return
         }
 
+        _uiState.update { it.copy(keyword = keyword) }
         refreshPosts()
     }
 
