@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -88,6 +91,8 @@ fun PostsScreen(
     onModalDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val focusManager = LocalFocusManager.current
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -97,7 +102,11 @@ fun PostsScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             PlaySoptSearchTextField(
                 state = searchState,
-                onSearch = onSearch,
+                onSearch = {
+                    focusManager.clearFocus()
+                    onSearch()
+                },
+                inputTransformation = InputTransformation.maxLength(SEARCH_KEYWORD_MAX_LENGTH),
                 modifier = Modifier.padding(vertical = 12.dp),
             )
 
