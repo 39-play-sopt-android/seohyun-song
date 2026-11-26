@@ -2,6 +2,8 @@ package org.sopt.play.presentation.posts
 
 import org.sopt.play.presentation.posts.model.PostCardUiModel
 import org.sopt.play.presentation.posts.model.PostSheetMode
+import org.sopt.play.presentation.posts.model.PostSheetMode.Create
+import org.sopt.play.presentation.posts.model.PostSheetMode.Edit
 
 internal const val SEARCH_KEYWORD_MIN_LENGTH = 2
 internal const val SEARCH_KEYWORD_MAX_LENGTH = 50
@@ -31,8 +33,8 @@ data class PostsUiState(
 
             return when (val mode = sheetMode) {
                 null -> false
-                PostSheetMode.Create -> isFilled
-                is PostSheetMode.Edit -> isFilled &&
+                Create -> isFilled
+                is Edit -> isFilled &&
                         (title.trim() != mode.initialTitle.trim() ||
                                 content.trim() != mode.initialContent.trim())
             }
