@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.designsystem.type.PlaySoptButtonType
 import org.sopt.play.core.extensions.noRippleClickable
 
 @Composable
@@ -22,18 +24,21 @@ fun PlaySoptButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+    type: PlaySoptButtonType = PlaySoptButtonType.PRIMARY,
 ) {
     val colors = PlaySoptTheme.colors
-    val backgroundColor = if (enabled) colors.black else colors.gray1
-    val textColor = if (enabled) colors.gray1 else colors.gray3
+    val (backgroundColor, textColor) = when (type) {
+        PlaySoptButtonType.PRIMARY -> colors.black to colors.gray1
+        PlaySoptButtonType.SECONDARY -> colors.gray1 to colors.gray5
+        PlaySoptButtonType.DISABLED -> colors.gray1 to colors.gray3
+    }
 
     Box(
         modifier = modifier
             .clip(CircleShape)
             .background(color = backgroundColor)
             .noRippleClickable(
-                enabled = enabled,
+                enabled = type != PlaySoptButtonType.DISABLED,
                 onClick = onClick,
             )
             .padding(all = 16.dp),
@@ -43,6 +48,7 @@ fun PlaySoptButton(
             text = text,
             color = textColor,
             style = PlaySoptTheme.typography.sb14,
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -57,17 +63,14 @@ private fun PlaySoptButtonPreview() {
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
-            PlaySoptButton(
-                text = "로그인",
-                onClick = {},
-                modifier = Modifier.fillMaxWidth(),
-            )
-            PlaySoptButton(
-                text = "로그인",
-                onClick = {},
-                modifier = Modifier.fillMaxWidth(),
-                enabled = false,
-            )
+            PlaySoptButtonType.entries.forEach { type ->
+                PlaySoptButton(
+                    text = "로그인",
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    type = type,
+                )
+            }
         }
     }
 }

@@ -14,7 +14,6 @@ class HomeViewModel : ViewModel() {
 
     fun onIntent(intent: HomeIntent) {
         when (intent) {
-            HomeIntent.SearchClick -> Unit
             is HomeIntent.MenuClick -> selectMenu(intent.menu)
             is HomeIntent.CategoryClick -> selectCategory(intent.category)
             is HomeIntent.FavoriteClick -> toggleFavorite(intent.productId)

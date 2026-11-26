@@ -44,9 +44,11 @@ data class PlaySoptTypography(
     val b28: TextStyle = playSoptTextStyle(weight = FontWeight.Bold, size = 28),
     val m18: TextStyle = playSoptTextStyle(weight = FontWeight.Medium, size = 18),
     val sb16: TextStyle = playSoptTextStyle(weight = FontWeight.SemiBold, size = 16),
+    val m16: TextStyle = playSoptTextStyle(weight = FontWeight.Medium, size = 16),
     val m14: TextStyle = playSoptTextStyle(weight = FontWeight.Medium, size = 14),
     val sb14: TextStyle = playSoptTextStyle(weight = FontWeight.SemiBold, size = 14),
     val r14: TextStyle = playSoptTextStyle(weight = FontWeight.Normal, size = 14),
+    val m12: TextStyle = playSoptTextStyle(weight = FontWeight.Medium, size = 12),
 )
 
 val defaultPlaySoptTypography = PlaySoptTypography()
@@ -59,9 +61,11 @@ private fun TypographyPreview() {
             Text("b28", style = PlaySoptTheme.typography.b28)
             Text("m18", style = PlaySoptTheme.typography.m18)
             Text("sb16", style = PlaySoptTheme.typography.sb16)
+            Text("m16", style = PlaySoptTheme.typography.m16)
             Text("m14", style = PlaySoptTheme.typography.m14)
             Text("sb14", style = PlaySoptTheme.typography.sb14)
             Text("r14", style = PlaySoptTheme.typography.r14)
+            Text("m12", style = PlaySoptTheme.typography.m12)
         }
     }
 }

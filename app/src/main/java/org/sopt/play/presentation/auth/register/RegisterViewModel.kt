@@ -3,7 +3,6 @@ package org.sopt.play.presentation.auth.register
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -15,10 +14,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.sopt.play.data.local.UserLocalDataSource
+import org.sopt.play.core.di.appContainer
+import org.sopt.play.data.repository.AuthRepository
 
 class RegisterViewModel(
-    private val userLocalDataSource: UserLocalDataSource,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     val nameState = TextFieldState()
     val emailState = TextFieldState()
@@ -48,20 +48,28 @@ class RegisterViewModel(
         if (!state.registerEnabled) return
 
         viewModelScope.launch {
-            userLocalDataSource.saveUser(state.email, state.password)
-                .onSuccess {
-                    _sideEffect.send(RegisterSideEffect.NavigateToLogin)
-                }
-                .onFailure {
-                    _sideEffect.send(RegisterSideEffect.ShowToast("회원가입에 실패했어요."))
-                }
+            authRepository.register(
+                name = state.name.trim(),
+                email = state.email,
+                password = state.password,
+            ).onSuccess {
+                _sideEffect.send(RegisterSideEffect.NavigateToLogin)
+            }.onFailure {
+                showToast("회원가입에 실패했어요.")
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _sideEffect.send(RegisterSideEffect.ShowToast(message))
         }
     }
 
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                RegisterViewModel(UserLocalDataSource(this[APPLICATION_KEY]!!))
+                RegisterViewModel(appContainer.authRepository)
             }
         }
     }

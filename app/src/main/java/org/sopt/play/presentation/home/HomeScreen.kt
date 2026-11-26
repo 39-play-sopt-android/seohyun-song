@@ -31,6 +31,7 @@ import org.sopt.play.presentation.home.model.HomeMenu
 
 @Composable
 fun HomeRoute(
+    navigateToPosts: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
 ) {
@@ -38,7 +39,7 @@ fun HomeRoute(
 
     HomeScreen(
         uiState = uiState,
-        onSearchClick = { viewModel.onIntent(HomeIntent.SearchClick) },
+        onSearchClick = navigateToPosts,
         onMenuClick = { viewModel.onIntent(HomeIntent.MenuClick(it)) },
         onCategoryClick = { viewModel.onIntent(HomeIntent.CategoryClick(it)) },
         onFavoriteClick = { viewModel.onIntent(HomeIntent.FavoriteClick(it)) },

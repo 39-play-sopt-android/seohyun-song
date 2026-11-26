@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -35,7 +37,9 @@ import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.designsystem.type.PlaySoptButtonType
 import org.sopt.play.core.extensions.showToast
+import org.sopt.play.presentation.auth.AuthValidator
 
 @Composable
 fun RegisterRoute(
@@ -110,6 +114,7 @@ fun RegisterScreen(
             label = "이름",
             state = nameState,
             placeholder = "홍길동",
+            inputTransformation = InputTransformation.maxLength(AuthValidator.MAX_NAME_LENGTH),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
@@ -165,9 +170,9 @@ fun RegisterScreen(
 
         PlaySoptButton(
             text = "회원가입",
-            enabled = uiState.registerEnabled,
             onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth(),
+            type = if (uiState.registerEnabled) PlaySoptButtonType.PRIMARY else PlaySoptButtonType.DISABLED,
         )
     }
 }

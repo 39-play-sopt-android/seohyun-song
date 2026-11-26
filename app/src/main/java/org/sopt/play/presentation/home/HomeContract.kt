@@ -14,7 +14,6 @@ data class HomeUiState(
 )
 
 sealed interface HomeIntent {
-    data object SearchClick : HomeIntent
     data class MenuClick(val menu: HomeMenu) : HomeIntent
     data class CategoryClick(val category: HomeCategory) : HomeIntent
     data class FavoriteClick(val productId: Int) : HomeIntent

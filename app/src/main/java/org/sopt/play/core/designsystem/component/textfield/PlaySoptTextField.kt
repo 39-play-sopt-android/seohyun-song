@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicSecureTextField
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -44,6 +45,7 @@ fun PlaySoptTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onKeyboardAction: KeyboardActionHandler? = null,
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
+    inputTransformation: InputTransformation? = null,
 ) {
     val colors = PlaySoptTheme.colors
 
@@ -109,6 +111,7 @@ fun PlaySoptTextField(
                 onKeyboardAction = onKeyboardAction,
                 interactionSource = internalInteractionSource,
                 cursorBrush = cursorBrush,
+                inputTransformation = inputTransformation,
                 decorator = decorator,
             )
         } else {
@@ -121,6 +124,7 @@ fun PlaySoptTextField(
                 lineLimits = lineLimits,
                 interactionSource = internalInteractionSource,
                 cursorBrush = cursorBrush,
+                inputTransformation = inputTransformation,
                 decorator = decorator,
             )
         }

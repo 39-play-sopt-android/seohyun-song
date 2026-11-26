@@ -3,7 +3,6 @@ package org.sopt.play.presentation.auth.login
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -12,14 +11,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.sopt.play.data.local.UserLocalDataSource
+import org.sopt.play.core.di.appContainer
+import org.sopt.play.data.remote.serverMessage
+import org.sopt.play.data.repository.AuthRepository
 
 class LoginViewModel(
-    private val userLocalDataSource: UserLocalDataSource
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     val emailState = TextFieldState()
     val passwordState = TextFieldState()
@@ -48,31 +48,33 @@ class LoginViewModel(
         if (!state.loginEnabled) return
 
         viewModelScope.launch {
-            val registeredEmail = userLocalDataSource.registeredEmail.first()
-            val registeredPassword = userLocalDataSource.registeredPassword.first()
-
-            val isCredentialMatched = registeredEmail != null &&
-                    state.email == registeredEmail &&
-                    state.password == registeredPassword
-
-            if (isCredentialMatched) {
-                userLocalDataSource.setAutoLogin(true)
-                    .onSuccess {
-                        _sideEffect.send(LoginSideEffect.NavigateToHome)
-                    }
-                    .onFailure {
-                        _sideEffect.send(LoginSideEffect.ShowToast("로그인 처리 중 문제가 생겼어요."))
-                    }
-            } else {
-                _sideEffect.send(LoginSideEffect.ShowToast("이메일 또는 비밀번호가 올바르지 않아요."))
+            if (!authRepository.isCredentialMatched(state.email, state.password)) {
+                showToast("이메일 또는 비밀번호가 올바르지 않아요.")
+                return@launch
             }
+
+            authRepository.ensureAuthorizationCode()
+                .onFailure {
+                    showToast(it.serverMessage() ?: "인증 코드 발급에 실패했어요.")
+                    return@launch
+                }
+
+            authRepository.setAutoLogin(true)
+                .onSuccess { _sideEffect.send(LoginSideEffect.NavigateToHome) }
+                .onFailure { showToast("로그인 처리 중 문제가 생겼어요.") }
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _sideEffect.send(LoginSideEffect.ShowToast(message))
         }
     }
 
     companion object {
         val Factory = viewModelFactory {
             initializer {
-                LoginViewModel(UserLocalDataSource(this[APPLICATION_KEY]!!))
+                LoginViewModel(authRepository = appContainer.authRepository)
             }
         }
     }

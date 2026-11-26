@@ -3,6 +3,7 @@ package org.sopt.play.presentation.auth
 import android.util.Patterns
 
 object AuthValidator {
+    const val MAX_NAME_LENGTH = 20
     private const val MIN_PASSWORD_LENGTH = 6
 
     const val EMAIL_ERROR_MSG = "올바른 이메일을 입력해주세요."

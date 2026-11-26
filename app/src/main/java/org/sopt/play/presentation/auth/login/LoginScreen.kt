@@ -35,6 +35,7 @@ import org.sopt.play.core.designsystem.component.button.PlaySoptButton
 import org.sopt.play.core.designsystem.component.textfield.PlaySoptTextField
 import org.sopt.play.core.designsystem.preview.FontScalePreviews
 import org.sopt.play.core.designsystem.theme.PlaySoptTheme
+import org.sopt.play.core.designsystem.type.PlaySoptButtonType
 import org.sopt.play.core.extensions.noRippleClickable
 import org.sopt.play.core.extensions.showToast
 
@@ -136,9 +137,9 @@ fun LoginScreen(
 
         PlaySoptButton(
             text = "로그인",
-            enabled = uiState.loginEnabled,
             onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth(),
+            type = if (uiState.loginEnabled) PlaySoptButtonType.PRIMARY else PlaySoptButtonType.DISABLED,
         )
 
         Spacer(modifier = Modifier.height(20.dp))
