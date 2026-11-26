@@ -6,6 +6,8 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,14 +18,15 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.sopt.play.presentation.posts.model.PostCardUiModel
+import org.sopt.play.core.di.appContainer
+import org.sopt.play.data.repository.PostRepository
 import org.sopt.play.presentation.posts.model.PostSheetMode.Create
 import org.sopt.play.presentation.posts.model.PostSheetMode.Edit
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import org.sopt.play.presentation.posts.model.toUiModel
 
-class PostsViewModel : ViewModel() {
+class PostsViewModel(
+    private val postRepository: PostRepository,
+) : ViewModel() {
     val searchState = TextFieldState()
     val titleState = TextFieldState()
     val contentState = TextFieldState()
@@ -43,10 +46,6 @@ class PostsViewModel : ViewModel() {
 
     private val _sideEffect = Channel<PostsSideEffect>()
     val sideEffect: Flow<PostsSideEffect> = _sideEffect.receiveAsFlow()
-
-    // TODO: API 연동 시 제거
-    private val dummyPosts = PostsDummyData.posts.toMutableList()
-    private var nextId = dummyPosts.size.toLong()
 
     init {
         refreshPosts()
@@ -73,17 +72,22 @@ class PostsViewModel : ViewModel() {
         refreshPosts()
     }
 
-    // TODO: API 연동 시 GET /api/v1/posts?keyword 호출로 교체
     private fun refreshPosts() {
-        val keyword = _uiState.value.keyword
-        val posts = dummyPosts
-            .filter {
-                keyword.isBlank() ||
-                        it.title.contains(keyword, ignoreCase = true) ||
-                        it.content.contains(keyword, ignoreCase = true)
-            }.sortedByDescending { it.id }
-
-        _uiState.update { it.copy(posts = posts, isLoading = false) }
+        val keyword = _uiState.value.keyword.ifBlank { null }
+        _uiState.update { it.copy(isLoading = true) }
+        
+        viewModelScope.launch { 
+            postRepository.getPosts(keyword)
+                .onSuccess { posts ->
+                    _uiState.update {
+                        it.copy(posts = posts.map { dto -> dto.toUiModel() }, isLoading = false)
+                    }
+                }
+                .onFailure {
+                    _uiState.update { it.copy(isLoading = false) }
+                    showToast("게시글을 불러오지 못했어요.")
+                }
+        }
     }
 
     private fun openCreateSheet() {
@@ -118,7 +122,6 @@ class PostsViewModel : ViewModel() {
         _uiState.update { it.copy(deleteTargetId = null) }
     }
 
-    // TODO: API 연동 시 POST /api/v1/posts, PUT /api/v1/posts/{postId} 호출로 교체
     private fun complete() {
         val state = uiState.value
         if (!state.completeEnabled) return
@@ -126,46 +129,45 @@ class PostsViewModel : ViewModel() {
         val title = state.title.trim()
         val content = state.content.trim()
 
-        when (mode) {
-            Create -> dummyPosts += PostCardUiModel(
-                id = nextId++,
-                title = title,
-                content = content,
-                author = "흠나흠나",
-                createdAt = SimpleDateFormat("yyyy.MM.dd", Locale.KOREA).format(Date()),
-            )
-
-            is Edit -> {
-                val index = dummyPosts.indexOfFirst { it.id == mode.postId }
-
-                if (index == -1) {
-                    showToast("게시글 수정에 실패했어요.")
-                    return
-                }
-
-                dummyPosts[index] = dummyPosts[index].copy(title = title, content = content)
+        viewModelScope.launch {
+            val result = when (mode) {
+                Create -> postRepository.createPost(title, content)
+                is Edit -> postRepository.updatePost(mode.postId, title, content)
             }
-        }
 
-        closeSheet()
-        refreshPosts()
+            result
+                .onSuccess {
+                    closeSheet()
+                    refreshPosts()
+                }
+                .onFailure {
+                    showToast(
+                        if (mode is Edit) "게시글 수정에 실패했어요." else "게시글 작성에 실패했어요."
+                    )
+                }
+        }
     }
 
-    // TODO: API 연동 시 DELETE /api/v1/posts/{postId} 호출로 교체
     private fun deletePost() {
         val postId = _uiState.value.deleteTargetId ?: return
         closeDeleteModal()
 
-        if (dummyPosts.removeAll { it.id == postId }) {
-            refreshPosts()
-        } else {
-            showToast("게시글 삭제에 실패했어요.")
+        viewModelScope.launch {
+            postRepository.deletePost(postId)
+                .onSuccess { refreshPosts() }
+                .onFailure { showToast("게시글 삭제에 실패했어요.") }
         }
     }
 
     private fun showToast(message: String) {
         viewModelScope.launch {
             _sideEffect.send(PostsSideEffect.ShowToast(message))
+        }
+    }
+
+    companion object {
+        val Factory = viewModelFactory {
+            initializer { PostsViewModel(appContainer.postRepository) }
         }
     }
 }

@@ -38,7 +38,7 @@ import org.sopt.play.presentation.posts.model.PostCardUiModel
 @Composable
 fun PostsRoute(
     modifier: Modifier = Modifier,
-    viewModel: PostsViewModel = viewModel(),
+    viewModel: PostsViewModel = viewModel(factory = PostsViewModel.Factory),
 ) {
     val context = LocalContext.current
 
