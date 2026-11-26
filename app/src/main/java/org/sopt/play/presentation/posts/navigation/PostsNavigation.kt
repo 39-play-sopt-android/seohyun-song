@@ -13,7 +13,7 @@ import org.sopt.play.core.navigation.Route
 import org.sopt.play.presentation.posts.PostsRoute
 
 fun NavController.navigateToPosts(
-    navOptions: NavOptions?= null
+    navOptions: NavOptions ?= null
 ) = navigate(Posts, navOptions)
 
 fun NavGraphBuilder.postsGraph(
@@ -29,4 +29,4 @@ fun NavGraphBuilder.postsGraph(
 }
 
 @Serializable
-data object Posts: Route
+data object Posts : Route
