@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,11 +73,13 @@ class PostsViewModel(
         refreshPosts()
     }
 
+    private var refreshJob: Job? = null
     private fun refreshPosts() {
         val keyword = _uiState.value.keyword.ifBlank { null }
         _uiState.update { it.copy(isLoading = true) }
-        
-        viewModelScope.launch { 
+
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
             postRepository.getPosts(keyword)
                 .onSuccess { posts ->
                     _uiState.update {
