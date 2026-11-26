@@ -17,7 +17,8 @@ interface PostService {
     @GET("api/v1/posts")
     suspend fun getPosts(
         @Query("keyword") keyword: String? = null,
-        @Query("size") size: Int = 30,
+        @Query("cursor") cursor: Long? = null,
+        @Query("size") size: Int = PAGE_SIZE,
     ): BaseResponse<PostSliceResponseDto>
 
     @POST("api/v1/posts")
@@ -35,4 +36,8 @@ interface PostService {
     suspend fun deletePost(
         @Path("postId") postId: Long,
     ): BaseResponse<Unit>
+
+    companion object {
+        const val PAGE_SIZE = 10
+    }
 }

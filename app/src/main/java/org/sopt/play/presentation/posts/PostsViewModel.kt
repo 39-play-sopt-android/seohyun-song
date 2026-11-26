@@ -54,6 +54,7 @@ class PostsViewModel(
     val sideEffect: Flow<PostsSideEffect> = _sideEffect.receiveAsFlow()
 
     private var refreshJob: Job? = null
+    private var loadMoreJob: Job? = null
     private var submitJob: Job? = null
 
     init {
@@ -71,6 +72,7 @@ class PostsViewModel(
             PostsIntent.SheetDismiss -> closeSheet()
             PostsIntent.DeleteClick -> deletePost()
             PostsIntent.ModalDismiss -> closeDeleteModal()
+            PostsIntent.LoadMore -> loadMore()
         }
     }
 
@@ -94,19 +96,53 @@ class PostsViewModel(
 
     private fun refreshPosts() {
         val keyword = _uiState.value.keyword.ifBlank { null }
-        _uiState.update { it.copy(isLoading = true) }
+        _uiState.update { it.copy(isLoading = true, isLoadingMore = false) }
 
+        loadMoreJob?.cancel()
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
-            postRepository.getPosts(keyword)
-                .onSuccess { posts ->
+            postRepository.getPosts(keyword = keyword, cursor = null)
+                .onSuccess { page ->
                     _uiState.update {
-                        it.copy(posts = posts.map { dto -> dto.toUiModel() }, isLoading = false)
+                        it.copy(
+                            posts = page.posts.map { dto -> dto.toUiModel() },
+                            nextCursor = page.nextCursor,
+                            hasNext = page.hasNext,
+                            isLoading = false,
+                        )
                     }
                 }
                 .onFailure { error ->
                     _uiState.update { it.copy(isLoading = false) }
                     showToast(error.serverMessage() ?: "게시글을 불러오지 못했어요.")
+                }
+        }
+    }
+
+    private fun loadMore() {
+        val state = _uiState.value
+        if (!state.hasNext || state.isLoading || state.isLoadingMore) return
+        val cursor = state.nextCursor ?: return
+        val keyword = state.keyword.ifBlank { null }
+
+        _uiState.update { it.copy(isLoadingMore = true) }
+
+        loadMoreJob = viewModelScope.launch {
+            postRepository.getPosts(keyword = keyword, cursor = cursor)
+                .onSuccess { page ->
+                    _uiState.update {
+                        it.copy(
+                            posts = (it.posts + page.posts.map { dto -> dto.toUiModel() })
+                                .distinctBy { post -> post.id },
+                            nextCursor = page.nextCursor,
+                            hasNext = page.hasNext,
+                            isLoadingMore = false,
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _uiState.update { it.copy(isLoadingMore = false) }
+                    showToast(error.serverMessage() ?: "게시글을 더 불러오지 못했어요.")
                 }
         }
     }

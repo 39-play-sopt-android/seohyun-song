@@ -15,6 +15,9 @@ data class PostsUiState(
     val title: String = "",
     val content: String = "",
     val myName: String? = null,
+    val nextCursor: Long? = null,
+    val hasNext: Boolean = false,
+    val isLoadingMore: Boolean = false,
 ) {
     val showEmpty: Boolean
         get() = !isLoading && posts.isEmpty()
@@ -48,6 +51,7 @@ sealed interface PostsIntent {
     data object SheetDismiss : PostsIntent
     data object DeleteClick : PostsIntent
     data object ModalDismiss : PostsIntent
+    data object LoadMore : PostsIntent
 }
 
 sealed interface PostsSideEffect {

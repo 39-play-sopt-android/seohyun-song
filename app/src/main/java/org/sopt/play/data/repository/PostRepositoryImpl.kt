@@ -13,9 +13,9 @@ class PostRepositoryImpl(
     private val userLocalDataSource: UserLocalDataSource,
 ) : PostRepository {
 
-    override suspend fun getPosts(keyword: String?) =
+    override suspend fun getPosts(keyword: String?, cursor: Long?) =
         suspendRunCatching {
-            postService.getPosts(keyword = keyword).requireData().posts
+            postService.getPosts(keyword = keyword, cursor = cursor).requireData()
         }
 
     override suspend fun createPost(title: String, content: String) =

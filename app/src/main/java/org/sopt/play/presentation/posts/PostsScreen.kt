@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.maxLength
@@ -16,7 +17,9 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +40,8 @@ import org.sopt.play.presentation.posts.component.PostBottomSheet
 import org.sopt.play.presentation.posts.component.PostCard
 import org.sopt.play.presentation.posts.component.PostModal
 import org.sopt.play.presentation.posts.model.PostCardUiModel
+
+private const val LOAD_MORE_THRESHOLD = 3
 
 @Composable
 fun PostsRoute(
@@ -71,6 +76,7 @@ fun PostsRoute(
         onSheetDismiss = { viewModel.onIntent(PostsIntent.SheetDismiss) },
         onDeleteClick = { viewModel.onIntent(PostsIntent.DeleteClick) },
         onModalDismiss = { viewModel.onIntent(PostsIntent.ModalDismiss) },
+        onLoadMore = { viewModel.onIntent(PostsIntent.LoadMore) },
         modifier = modifier,
     )
 }
@@ -89,9 +95,24 @@ fun PostsScreen(
     onSheetDismiss: () -> Unit,
     onDeleteClick: () -> Unit,
     onModalDismiss: () -> Unit,
+    onLoadMore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
+
+    val listState = rememberLazyListState()
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: return@derivedStateOf false
+            lastVisibleIndex >= layoutInfo.totalItemsCount - LOAD_MORE_THRESHOLD
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore, uiState.posts.size) {
+        if (shouldLoadMore) onLoadMore()
+    }
 
     Box(
         modifier = modifier
@@ -124,6 +145,7 @@ fun PostsScreen(
                 }
             } else {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 152.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -195,6 +217,7 @@ private fun PostsScreenPreview() {
             onSheetDismiss = {},
             onDeleteClick = {},
             onModalDismiss = {},
+            onLoadMore = {},
         )
     }
 }
