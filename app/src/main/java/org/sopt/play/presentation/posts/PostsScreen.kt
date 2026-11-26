@@ -135,19 +135,7 @@ fun PostsScreen(
                 modifier = Modifier.padding(vertical = 12.dp),
             )
 
-            if (uiState.showEmpty) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = uiState.emptyMessage,
-                        color = PlaySoptTheme.colors.gray3,
-                        style = PlaySoptTheme.typography.m18,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            } else {
+            if (!uiState.showEmpty) {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
@@ -166,6 +154,16 @@ fun PostsScreen(
                     }
                 }
             }
+        }
+
+        if (uiState.showEmpty) {
+            Text(
+                text = uiState.emptyMessage,
+                color = PlaySoptTheme.colors.gray3,
+                style = PlaySoptTheme.typography.m18,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center),
+            )
         }
 
         PlaySoptFloatingButton(
