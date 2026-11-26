@@ -53,6 +53,9 @@ class PostsViewModel(
     private val _sideEffect = Channel<PostsSideEffect>()
     val sideEffect: Flow<PostsSideEffect> = _sideEffect.receiveAsFlow()
 
+    private var refreshJob: Job? = null
+    private var submitJob: Job? = null
+
     init {
         observeMyName()
         refreshPosts()
@@ -85,7 +88,6 @@ class PostsViewModel(
             .launchIn(viewModelScope)
     }
 
-    private var refreshJob: Job? = null
     private fun refreshPosts() {
         val keyword = _uiState.value.keyword.ifBlank { null }
         _uiState.update { it.copy(isLoading = true) }
@@ -106,6 +108,11 @@ class PostsViewModel(
     }
 
     private fun openCreateSheet() {
+        if (_uiState.value.myName == null) {
+            showToast("회원 정보에 이름이 없어요. 다시 회원가입해 주세요.")
+            return
+        }
+
         titleState.clearText()
         contentState.clearText()
 
