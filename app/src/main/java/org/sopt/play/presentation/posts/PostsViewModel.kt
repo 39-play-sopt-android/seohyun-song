@@ -15,12 +15,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.sopt.play.core.di.appContainer
 import org.sopt.play.data.remote.serverMessage
+import org.sopt.play.data.repository.AuthRepository
 import org.sopt.play.data.repository.PostRepository
 import org.sopt.play.presentation.posts.model.PostSheetMode.Create
 import org.sopt.play.presentation.posts.model.PostSheetMode.Edit
@@ -28,6 +31,7 @@ import org.sopt.play.presentation.posts.model.toUiModel
 
 class PostsViewModel(
     private val postRepository: PostRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     val searchState = TextFieldState()
     val titleState = TextFieldState()
@@ -50,6 +54,7 @@ class PostsViewModel(
     val sideEffect: Flow<PostsSideEffect> = _sideEffect.receiveAsFlow()
 
     init {
+        observeMyName()
         refreshPosts()
     }
 
@@ -72,6 +77,12 @@ class PostsViewModel(
         }
 
         refreshPosts()
+    }
+
+    private fun observeMyName() {
+        authRepository.registeredName
+            .onEach { name -> _uiState.update { it.copy(myName = name) } }
+            .launchIn(viewModelScope)
     }
 
     private var refreshJob: Job? = null
@@ -104,7 +115,13 @@ class PostsViewModel(
     }
 
     private fun openEditSheet(postId: Long) {
-        val post = _uiState.value.posts.find { it.id == postId } ?: return
+        val state = _uiState.value
+        val post = state.posts.find { it.id == postId } ?: return
+
+        if (!state.isMine(post)) {
+            showToast(NOT_MINE_MESSAGE)
+            return
+        }
 
         titleState.setTextAndPlaceCursorAtEnd(post.title)
         contentState.setTextAndPlaceCursorAtEnd(post.content)
@@ -119,6 +136,14 @@ class PostsViewModel(
     }
 
     private fun openDeleteModal(postId: Long) {
+        val state = _uiState.value
+        val post = state.posts.find { it.id == postId } ?: return
+
+        if (!state.isMine(post)) {
+            showToast(NOT_MINE_MESSAGE)
+            return
+        }
+
         _uiState.update { it.copy(deleteTargetId = postId) }
     }
 
@@ -169,8 +194,15 @@ class PostsViewModel(
     }
 
     companion object {
+        private const val NOT_MINE_MESSAGE = "내가 쓴 글만 수정/삭제할 수 있어요."
+
         val Factory = viewModelFactory {
-            initializer { PostsViewModel(appContainer.postRepository) }
+            initializer {
+                PostsViewModel(
+                    postRepository = appContainer.postRepository,
+                    authRepository = appContainer.authRepository,
+                )
+            }
         }
     }
 }

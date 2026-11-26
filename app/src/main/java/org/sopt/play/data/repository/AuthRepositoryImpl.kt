@@ -14,6 +14,7 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
 
     override val isAutoLogin: Flow<Boolean> = userLocalDataSource.isAutoLogin
+    override val registeredName: Flow<String?> = userLocalDataSource.registeredName
 
     override suspend fun register(name: String, email: String, password: String) =
         userLocalDataSource.saveUser(name, email, password)

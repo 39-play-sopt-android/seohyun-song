@@ -11,6 +11,7 @@ data class PostsUiState(
     val deleteTargetId: Long? = null,
     val title: String = "",
     val content: String = "",
+    val myName: String? = null,
 ) {
     val showEmpty: Boolean
         get() = !isLoading && posts.isEmpty()
@@ -29,6 +30,9 @@ data class PostsUiState(
                         (title.trim() != mode.initialTitle || content.trim() != mode.initialContent)
             }
         }
+
+    fun isMine(post: PostCardUiModel): Boolean =
+        myName != null && post.author == myName
 }
 
 sealed interface PostsIntent {
