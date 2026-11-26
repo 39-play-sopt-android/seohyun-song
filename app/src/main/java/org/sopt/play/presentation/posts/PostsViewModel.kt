@@ -159,13 +159,17 @@ class PostsViewModel(
     }
 
     private fun complete() {
+        if (submitJob?.isActive == true) return
+
         val state = uiState.value
         if (!state.completeEnabled) return
         val mode = state.sheetMode ?: return
         val title = state.title.trim()
         val content = state.content.trim()
 
-        viewModelScope.launch {
+        closeSheet()
+
+        submitJob = viewModelScope.launch {
             val result = when (mode) {
                 Create -> postRepository.createPost(title, content)
                 is Edit -> postRepository.updatePost(mode.postId, title, content)
@@ -173,7 +177,7 @@ class PostsViewModel(
 
             result
                 .onSuccess {
-                    closeSheet()
+                    if (mode is Create) clearSearch()
                     refreshPosts()
                 }
                 .onFailure { error ->
@@ -181,6 +185,11 @@ class PostsViewModel(
                     showToast(error.serverMessage() ?: fallback)
                 }
         }
+    }
+
+    private fun clearSearch() {
+        searchState.clearText()
+        _uiState.update { it.copy(keyword = "") }
     }
 
     private fun deletePost() {
