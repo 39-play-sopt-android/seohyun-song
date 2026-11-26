@@ -108,7 +108,7 @@ fun PostsScreen(
                 ) {
                     Text(
                         text = uiState.emptyMessage,
-                        color = PlaySoptTheme.colors.gray6,
+                        color = PlaySoptTheme.colors.gray3,
                         style = PlaySoptTheme.typography.m18,
                         textAlign = TextAlign.Center,
                     )
