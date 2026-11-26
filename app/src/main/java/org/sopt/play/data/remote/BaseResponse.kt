@@ -10,3 +10,6 @@ data class BaseResponse<T>(
     @SerialName("message") val message: String,
     @SerialName("data") val data: T? = null,
 )
+
+fun <T> BaseResponse<T>.requireData(): T =
+    data ?: error(message.ifBlank { "response data is null" })
