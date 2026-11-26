@@ -61,11 +61,11 @@ private fun TypographyPreview() {
             Text("b28", style = PlaySoptTheme.typography.b28)
             Text("m18", style = PlaySoptTheme.typography.m18)
             Text("sb16", style = PlaySoptTheme.typography.sb16)
-            Text("m16", style = PlaySoptTheme.typography.sb16)
+            Text("m16", style = PlaySoptTheme.typography.m16)
             Text("m14", style = PlaySoptTheme.typography.m14)
             Text("sb14", style = PlaySoptTheme.typography.sb14)
             Text("r14", style = PlaySoptTheme.typography.r14)
-            Text("m12", style = PlaySoptTheme.typography.r14)
+            Text("m12", style = PlaySoptTheme.typography.m12)
         }
     }
 }
